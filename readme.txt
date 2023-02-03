@@ -1,3 +1,1 @@
-/****AIT-BU01-DB V100 T2020-5-17 Johhn*****/
-AT∞ÊSDK
-/*****************************************/
+A library that implements indoor navigation on the DW1000 module with STM32
