@@ -1,0 +1,86 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.14.0.0
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: a a, a, LIC=V8563-AMC87-047SQ-NSVRF-5LI2J-DIC6H
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Professional  Version: 5.14.0.0
+Toolchain Path:  D:\Johhn\kile5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.05 update 1 (build 106)
+Assembler:       Armasm.exe V5.05 update 1 (build 106)
+Linker/Locator:  ArmLink.exe V5.05 update 1 (build 106)
+Library Manager: ArmAr.exe V5.05 update 1 (build 106)
+Hex Converter:   FromElf.exe V5.05 update 1 (build 106)
+CPU DLL:         SARMCM3.DLL V5.14.0.0
+Dialog DLL:      DCM.DLL V1.13.1.0
+Target DLL:      Segger\JL2CM3.dll V2.99.13.0
+Dialog DLL:      TCM.DLL V1.14.4.0
+ 
+<h2>Project:</h2>
+D:\Johhn\bu01\bu01\software\user_firmware\test\test1\SDK\Project\ds_twr_init\MDK-ARM\Project.uvprojx
+Project File Date:  06/17/2020
+
+<h2>Output:</h2>
+Build target 'ds_twr_init'
+compiling main.c...
+..\main.c(92): warning:  #177-D: variable "buff" was declared but never referenced
+      uint8 buff[5];
+..\main.c(94): warning:  #550-D: variable "cnt" was set but never used
+      int cnt ;
+..\main.c(228): warning:  #177-D: variable "final_distance" was declared but never referenced
+      float final_distance = 0;
+..\main.c(477): warning:  #223-D: function "FLASH_ReadMoreData" declared implicitly
+        FLASH_ReadMoreData(USER_FLASH_BASE,buff,3);
+..\main.c(495): warning:  #186-D: pointless comparison of unsigned integer with zero
+        if(buff[1]>=0 && buff[1]<=255)
+..\main.c(520): warning:  #186-D: pointless comparison of unsigned integer with zero
+        if(buff[1]>=0 && buff[1]<=255)
+..\main.c(410): warning:  #177-D: variable "anthor_index" was declared but never referenced
+      uint8 anthor_index = 0;
+..\main.c(411): warning:  #177-D: variable "tag_index" was declared but never referenced
+      uint8 tag_index = 0;
+..\main.c(413): warning:  #550-D: variable "Semaphore_Enable" was set but never used
+      uint8 Semaphore_Enable = 0 ;
+..\main.c(414): warning:  #550-D: variable "Waiting_TAG_Release_Semaphore" was set but never used
+      uint8 Waiting_TAG_Release_Semaphore = 0;
+..\main.c(415): warning:  #177-D: variable "frame_len" was declared but never referenced
+      int8 frame_len = 0;
+..\main.c(472): warning:  #177-D: variable "rx_ant_delay" was declared but never referenced
+      int rx_ant_delay =32880;
+..\main.c(473): warning:  #177-D: variable "index" was declared but never referenced
+      int index = 0 ;
+..\main.c(647): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+          OLED_ShowString(0, 2,dist_str);
+..\main.c(656): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+          OLED_ShowString(0, 4,dist_str);
+..\main.c(680): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+          OLED_ShowString(0, 6,dist_str);
+..\main.c: 16 warnings, 0 errors
+linking...
+Program Size: Code=23620 RO-data=3212 RW-data=1060 ZI-data=3756  
+FromELF: creating hex file...
+".\STM3210E-EVAL\STM3210E-EVAL.axf" - 0 Error(s), 16 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.4.5.0.pack
+                ARM::CMSIS:CORE:4.3.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 4.3.0
+
+<h2>Collection of Component include folders:</h2>
+  D:\Johhn\bu01\bu01\software\user_firmware\test\test1\SDK\Project\ds_twr_init\MDK-ARM\RTE
+  D:\Johhn\kile5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include
+  D:\Johhn\kile5\ARM\PACK\Keil\STM32F1xx_DFP\2.1.0
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:4.3.0
+</pre>
+</body>
+</html>
