@@ -3,7 +3,7 @@
 .\stm3210e-eval\stm32_eval_i2c_tsensor.o: ..\..\..\Utilities\STM32_EVAL\stm32_eval.h
 .\stm3210e-eval\stm32_eval_i2c_tsensor.o: ..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\stm32f10x.h
 .\stm3210e-eval\stm32_eval_i2c_tsensor.o: ..\..\..\Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
-.\stm3210e-eval\stm32_eval_i2c_tsensor.o: D:\Johhn\kile5\ARM\ARMCC\Bin\..\include\stdint.h
+.\stm3210e-eval\stm32_eval_i2c_tsensor.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\stm3210e-eval\stm32_eval_i2c_tsensor.o: ..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\system_stm32f10x.h
 .\stm3210e-eval\stm32_eval_i2c_tsensor.o: ..\stm32f10x_conf.h
 .\stm3210e-eval\stm32_eval_i2c_tsensor.o: ..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h

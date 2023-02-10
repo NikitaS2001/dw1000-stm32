@@ -553,13 +553,13 @@ ARM Macro Assembler    Page 9
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M3 --apcs=interw
 ork --depend=.\stm3210e-eval\startup_stm32f10x_hd.d -o.\stm3210e-eval\startup_s
-tm32f10x_hd.o -ID:\Johhn\bu01\bu01\software\user_firmware\test\test1\SDK\Projec
-t\ds_twr_init\MDK-ARM\RTE -ID:\Johhn\kile5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Inclu
-de -ID:\Johhn\kile5\ARM\PACK\Keil\STM32F1xx_DFP\2.1.0 -ID:\Johhn\kile5\ARM\PACK
-\Keil\STM32F1xx_DFP\2.1.0\Device\Include --predefine="__MICROLIB SETA 1" --pred
-efine="__UVISION_VERSION SETA 514" --predefine="_RTE_ SETA 1" --predefine="STM3
-2F10X_MD SETA 1" --list=.\stm3210e-eval\startup_stm32f10x_hd.lst ..\..\..\Libra
-ries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\startup\arm\startup_stm32f10x_hd.s
+tm32f10x_hd.o -I.\RTE\_ds_twr_init -IC:\Users\n1kk1\AppData\Local\Arm\Packs\ARM
+\CMSIS\5.6.0\CMSIS\Core\Include -IC:\Users\n1kk1\AppData\Local\Arm\Packs\Keil\S
+TM32F1xx_DFP\2.4.0\Device\Include --predefine="__EVAL SETA 1" --predefine="__MI
+CROLIB SETA 1" --predefine="__UVISION_VERSION SETA 529" --predefine="_RTE_ SETA
+ 1" --predefine="STM32F10X_MD SETA 1" --list=.\stm3210e-eval\startup_stm32f10x_
+hd.lst ..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\startup\arm\star
+tup_stm32f10x_hd.s
 
 
 
@@ -1695,4 +1695,4 @@ Symbol: __main
 0x\startup\arm\startup_stm32f10x_hd.s
 Comment: __main used once
 2 symbols
-423 symbols in table
+424 symbols in table
