@@ -1,0 +1,276 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.29.0.0
+Copyright (C) 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: nik nik, nik, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.29.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.29.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      Segger\JL2CM3.dll V2.99.36.0
+Dialog DLL:      TCM.DLL V1.36.5.0
+ 
+<h2>Project:</h2>
+C:\Users\n1kk1\OneDrive\Ðàáî÷èé ñòîë\dw1000-stm32\Project\ds_twr_init\MDK-ARM\Project.uvprojx
+Project File Date:  02/10/2023
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'ds_twr_init'
+compiling stm32f10x_usart.c...
+compiling stm32f10x_it.c...
+..\stm32f10x_it.c(62): warning:  #223-D: function "printf" declared implicitly
+  	printf("HardFault_Handler \r\n");
+..\stm32f10x_it.c: 1 warning, 0 errors
+compiling misc.c...
+compiling stm32f10x_bkp.c...
+compiling stm32f10x_exti.c...
+compiling stm32f10x_dma.c...
+compiling stm32f10x_gpio.c...
+compiling stm32f10x_spi.c...
+compiling stm32f10x_sdio.c...
+compiling stm32f10x_rcc.c...
+compiling stm32f10x_i2c.c...
+compiling stm32f10x_adc.c...
+compiling stm32f10x_fsmc.c...
+compiling stm32f10x_can.c...
+compiling main.c...
+..\main.c(52): warning:  #177-D: variable "buff"  was declared but never referenced
+      uint8 buff[5];
+..\main.c(54): warning:  #550-D: variable "cnt"  was set but never used
+      int cnt ;
+..\main.c(188): warning:  #177-D: variable "final_distance"  was declared but never referenced
+      float final_distance = 0;
+..\main.c(418): warning:  #223-D: function "FLASH_ReadMoreData" declared implicitly
+  	FLASH_ReadMoreData(USER_FLASH_BASE,buff,3);
+..\main.c(436): warning:  #186-D: pointless comparison of unsigned integer with zero
+  	if(buff[1]>=0 && buff[1]<=255)
+..\main.c(461): warning:  #186-D: pointless comparison of unsigned integer with zero
+  	if(buff[1]>=0 && buff[1]<=255)
+..\main.c(351): warning:  #177-D: variable "anthor_index"  was declared but never referenced
+      uint8 anthor_index = 0;
+..\main.c(352): warning:  #177-D: variable "tag_index"  was declared but never referenced
+      uint8 tag_index = 0;
+..\main.c(354): warning:  #550-D: variable "Semaphore_Enable"  was set but never used
+      uint8 Semaphore_Enable = 0 ;
+..\main.c(355): warning:  #550-D: variable "Waiting_TAG_Release_Semaphore"  was set but never used
+      uint8 Waiting_TAG_Release_Semaphore = 0;
+..\main.c(356): warning:  #177-D: variable "frame_len"  was declared but never referenced
+      int8 frame_len = 0;
+..\main.c(413): warning:  #177-D: variable "rx_ant_delay"  was declared but never referenced
+      int rx_ant_delay =32880;
+..\main.c(414): warning:  #177-D: variable "index"  was declared but never referenced
+      int index = 0 ;
+..\main.c(588): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+          OLED_ShowString(0, 2,dist_str);
+..\main.c(597): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+          OLED_ShowString(0, 4,dist_str);
+..\main.c(621): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+          OLED_ShowString(0, 6,dist_str);
+..\main.c: 16 warnings, 0 errors
+compiling stm32f10x_cec.c...
+compiling core_cm3.c...
+compiling stm32f10x_crc.c...
+compiling stm32f10x_dbgmcu.c...
+compiling stm32f10x_iwdg.c...
+compiling stm32f10x_dac.c...
+compiling stm32f10x_pwr.c...
+compiling stm32f10x_wwdg.c...
+compiling stm32f10x_rtc.c...
+compiling system_stm32f10x.c...
+assembling startup_stm32f10x_hd.s...
+compiling stm32f10x_flash.c...
+compiling stm32_eval_i2c_tsensor.c...
+compiling stm32_eval_spi_flash.c...
+compiling stm32f10x_tim.c...
+compiling stm32_eval.c...
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(422): warning:  #223-D: function "atoi" declared implicitly
+  		uint16_t Set=atoi(get);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(458): warning:  #223-D: function "atoi" declared implicitly
+  		uint16_t Set=atoi(get);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(493): warning:  #223-D: function "printf" declared implicitly
+  		printf("AIT-BU01-DB V100 T2020-5-17\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(504): warning:  #223-D: function "printf" declared implicitly
+  		printf("\r\nOK\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(533): warning:  #223-D: function "SHT20_read_tem" declared implicitly
+  		SHT20_read_tem(&get);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(534): warning:  #223-D: function "printf" declared implicitly
+  		printf("T:%f\r\n",get);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(537): warning:  #223-D: function "SHT20_read_hum" declared implicitly
+  		SHT20_read_hum(&get);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(561): warning:  #223-D: function "drv_lis2dh12_get_angle" declared implicitly
+  		drv_lis2dh12_get_angle(&speed);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(563): warning:  #223-D: function "printf" declared implicitly
+  		printf("angle:%f\r\n",speed);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(649): warning:  #223-D: function "atoi" declared implicitly
+  		uint16_t Set=atoi(get);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(673): warning:  #186-D: pointless comparison of unsigned integer with zero
+  		if(Set>=0 && Set<=255)
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(691): warning:  #223-D: function "printf" declared implicitly
+  		printf("buff0:%d\r\n",buff[0]);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(709): warning:  #223-D: function "dwt_setGPIOdirection" declared implicitly
+  	dwt_setGPIOdirection(GDMx,0);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(710): warning:  #223-D: function "dwt_setGPIOvalue" declared implicitly
+  		dwt_setGPIOvalue(GDMx,GDPx);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(712): warning:  #223-D: function "dwt_getgpiovalue" declared implicitly
+  		get=dwt_getgpiovalue(GDPy);
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(775): warning:  #223-D: function "dwt_enablegpioclocks" declared implicitly
+  		dwt_enablegpioclocks();
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(776): warning:  #223-D: function "dwt_enablegpioclocks1" declared implicitly
+  		dwt_enablegpioclocks1();//io7 geneal gpio
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(783): warning:  #223-D: function "printf" declared implicitly
+  			printf("IO 4-6 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(788): warning:  #223-D: function "printf" declared implicitly
+  			printf("IO 4-6 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(796): warning:  #223-D: function "printf" declared implicitly
+  			printf("IO 5-7 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(801): warning:  #223-D: function "printf" declared implicitly
+  				printf("IO 5-7 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(814): warning:  #940-D: missing return statement at end of non-void function "buo1Gpio" 
+  }
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(911): warning:  #223-D: function "printf" declared implicitly
+  		printf(" PB8-PB9 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(916): warning:  #223-D: function "printf" declared implicitly
+  		printf("PB8-PB9 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(922): warning:  #223-D: function "printf" declared implicitly
+  		printf(" PA8-PB15 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(927): warning:  #223-D: function "printf" declared implicitly
+  		printf("PA8-PB15 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(934): warning:  #223-D: function "printf" declared implicitly
+  		printf(" PB1-PB11 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(939): warning:  #223-D: function "printf" declared implicitly
+  		printf("PB1-PB11 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(945): warning:  #223-D: function "printf" declared implicitly
+  		printf(" PA3-PB10 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(950): warning:  #223-D: function "printf" declared implicitly
+  		printf("PA3-PB10 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(958): warning:  #223-D: function "printf" declared implicitly
+  		printf(" PB3-PB5 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(963): warning:  #223-D: function "printf" declared implicitly
+  		printf("PB3-PB5 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(970): warning:  #223-D: function "printf" declared implicitly
+  		printf(" PA15-PB4 fail\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(975): warning:  #223-D: function "printf" declared implicitly
+  		printf("PA15-PB4 success\r\n");
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(1110): warning:  #2548-D: multicharacter character literal (potential portability problem)
+  		if (strp[ch_index] == 'ch') {
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(1173): warning:  #223-D: function "printf" declared implicitly
+  	if (-1 == ret) respond_error();
+..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.c(1174): warning:  #223-D: function "printf" declared implicitly
+  	else respond_ok();
+..\..\..\Utilities\STM32_EVAL\stm32_eval.c: 37 warnings, 0 errors
+compiling deca_params_init.c...
+compiling deca_range_tables.c...
+compiling stm3210e_eval_fsmc_sram.c...
+compiling deca_mutex.c...
+compiling deca_sleep.c...
+compiling stm3210e_eval_fsmc_nand.c...
+compiling stm3210e_eval_fsmc_nor.c...
+compiling stm3210e_eval_lcd.c...
+compiling lcd.c...
+compiling stm32_eval_sdio_sd.c...
+compiling deca_spi.c...
+compiling port.c...
+..\platform\port.c(853): warning:  #223-D: function "putchar" declared implicitly
+          putchar(s[i]);
+..\platform\port.c(996): warning:  #223-D: function "drv_lis2dh12_init" declared implicitly
+  		drv_lis2dh12_init();
+..\platform\port.c(997): warning:  #223-D: function "SHT20_init" declared implicitly
+  		SHT20_init();
+..\platform\port.c: 3 warnings, 0 errors
+compiling lcd_oled.c...
+..\platform\lcd_oled.c(245): warning:  #940-D: missing return statement at end of non-void function "hal_i2c1_send_data" 
+  }
+..\platform\lcd_oled.c(378): warning:  #223-D: function "printf" declared implicitly
+  			printf("SHT20_read_tem time out 03");
+..\platform\lcd_oled.c(412): warning:  #223-D: function "printf" declared implicitly
+  			printf(0,"SHT20_read_tem time out 03");
+..\platform\lcd_oled.c(522): warning:  #940-D: missing return statement at end of non-void function "drv_lis2dh12_init" 
+  }
+..\platform\lcd_oled.c(562): warning:  #167-D: argument of type "int8_t *" is incompatible with parameter of type "uint8_t *"
+  		drv_lis2dh12_iic_read_byte(0x28 + i, data+i);
+..\platform\lcd_oled.c(572): warning:  #223-D: function "printf" declared implicitly
+  	printf("acc_x:%f\r\n",acc_x);
+..\platform\lcd_oled.c(556): warning:  #177-D: variable "angle_x"  was declared but never referenced
+  	float angle_x, angle_y, angle_z, angle_xyz;
+..\platform\lcd_oled.c(556): warning:  #177-D: variable "angle_y"  was declared but never referenced
+  	float angle_x, angle_y, angle_z, angle_xyz;
+..\platform\lcd_oled.c(556): warning:  #177-D: variable "angle_xyz"  was declared but never referenced
+  	float angle_x, angle_y, angle_z, angle_xyz;
+..\platform\lcd_oled.c(45): warning:  #177-D: function "I2C_AcknowledgePolling"  was declared but never referenced
+  static void I2C_AcknowledgePolling(I2C_TypeDef *I2Cx,uint8_t I2C_Addr)
+..\platform\lcd_oled.c: 10 warnings, 0 errors
+compiling kalman.c...
+compiling AT24C02.c...
+..\at24c16\AT24C02.c(341): warning:  #1-D: last line of file ends without a newline
+  }
+..\at24c16\AT24C02.c: 1 warning, 0 errors
+compiling matrix.c...
+compiling deca_device.c...
+..\decadriver\deca_device.c(1106): warning:  #68-D: integer conversion resulted in a change of sign
+      uint32  regval = DWT_ERROR ;
+..\decadriver\deca_device.c(1138): warning:  #68-D: integer conversion resulted in a change of sign
+      uint16  regval = DWT_ERROR ;
+..\decadriver\deca_device.c(1452): warning:  #68-D: integer conversion resulted in a change of sign
+          return DWT_ERROR;
+..\decadriver\deca_device.c(1586): warning:  #68-D: integer conversion resulted in a change of sign
+          return DWT_ERROR;
+..\decadriver\deca_device.c: 4 warnings, 0 errors
+compiling trilateration.c...
+..\trilateration\trilateration.c(534): warning:  #550-D: variable "solution_compare2"  was set but never used
+      vec3d   solution_compare1, solution_compare2;
+..\trilateration\trilateration.c(712): warning:  #223-D: function "printf" declared implicitly
+      printf("r1=%f , r2=%f, r3=%f,  r4=%f\r\n",r1,r2,r3,r4);
+..\trilateration\trilateration.c(815): warning:  #223-D: function "printf" declared implicitly
+      printf("TAG LOC:x = %f,y = %f\r\n",x0,y0);
+..\trilateration\trilateration.c(760): warning:  #550-D: parameter "use4thAnchor"  was set but never used
+  int GetLocation2(vec3d * best_solution,int use4thAnchor,vec3d * anchorArray,int * distanceArray)
+..\trilateration\trilateration.c(941): warning:  #223-D: function "abs" declared implicitly
+          if (abs(points_AC_0 - circles[2].r) < abs(points_AC_1 - circles[2].r))//cross_point[0]
+..\trilateration\trilateration.c(1047): warning:  #223-D: function "printf" declared implicitly
+  		printf("TAG LOC My:x = %3.2f,y = %3.2f\r\n",P_1,P_2);
+..\trilateration\trilateration.c(967): warning:  #550-D: variable "Location"  was set but never used
+      struct  point_t points[1],Location[1];;
+..\trilateration\trilateration.c(1085): warning:  #223-D: function "printf" declared implicitly
+  	printf("TAG LOC My1:x = %3.2f,y = %3.2f\r\n",resultPose.x,resultPose.y);
+..\trilateration\trilateration.c: 8 warnings, 0 errors
+linking...
+Program Size: Code=23708 RO-data=3212 RW-data=1060 ZI-data=3756  
+FromELF: creating hex file...
+".\STM3210E-EVAL\STM3210E-EVAL.axf" - 0 Error(s), 80 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.6.0.pack
+                ARM.CMSIS.5.6.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.3.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F1xx_DFP.2.4.0.pack
+                Keil.STM32F1xx_DFP.2.4.0
+                STMicroelectronics STM32F1 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_ds_twr_init
+  C:\Users\n1kk1\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include
+  C:\Users\n1kk1\AppData\Local\Arm\Packs\Keil\STM32F1xx_DFP\2.4.0\Device\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.3.0
+Build Time Elapsed:  00:00:03
+</pre>
+</body>
+</html>

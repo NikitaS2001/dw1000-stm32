@@ -1,43 +1,3 @@
-/**
-  ******************************************************************************
-  * @file    Project/STM32F10x_StdPeriph_Template/main.c
-  * @author  MCD Application Team
-  * @version V3.5.0
-  * @date    08-April-2011
-  * @brief   Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * THE PRESENT FIRMWARE WHICH IS FOR GUIDANCE ONLY AIMS AT PROVIDING CUSTOMERS
-  * WITH CODING INFORMATION REGARDING THEIR PRODUCTS IN ORDER FOR THEM TO SAVE
-  * TIME. AS A RESULT, STMICROELECTRONICS SHALL NOT BE HELD LIABLE FOR ANY
-  * DIRECT, INDIRECT OR CONSEQUENTIAL DAMAGES WITH RESPECT TO ANY CLAIMS ARISING
-  * FROM THE CONTENT OF SUCH FIRMWARE AND/OR THE USE MADE BY CUSTOMERS OF THE
-  * CODING INFORMATION CONTAINED HEREIN IN CONNECTION WITH THEIR PRODUCTS.
-  *
-  * <h2><center>&copy; COPYRIGHT 2011 STMicroelectronics</center></h2>
-  ******************************************************************************
-  */
-/*! ----------------------------------------------------------------------------
- *  @file    main.c
- *  @brief   Double-sided two-way ranging (DS TWR) responder example code
- *
- *           This is a simple code example which acts as the responder in a DS TWR distance measurement exchange. This application waits for a "poll"
- *           message (recording the RX time-stamp of the poll) expected from the "DS TWR initiator" example code (companion to this application), and
- *           then sends a "response" message recording its TX time-stamp, after which it waits for a "final" message from the initiator to complete
- *           the exchange. The final message contains the remote initiator's time-stamps of poll TX, response RX and final TX. With this data and the
- *           local time-stamps, (of poll RX, response TX and final RX), this example application works out a value for the time-of-flight over-the-air
- *           and, thus, the estimated distance between the two devices, which it writes to the LCD.
- *
- * @attention
- *
- * Copyright 2015 (c) Decawave Ltd, Dublin, Ireland.
- *
- * All rights reserved.
- *
- * @author Decawave
- */
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include <stdio.h>
@@ -231,7 +191,7 @@ void Tag_Measure_Dis(void)
     {
         dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
         dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
-        /* Write frame data to DW1000 and prepare transmission. See NOTE 7 below. */
+        /* Write frame data to DW1000 and prepare transmission. */
         tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
         tx_poll_msg[ALL_MSG_TAG_IDX] = TAG_ID;//基站收到标签的信息，里面有TAG_ID,在基站回复标签的时候，也需要指定TAG_ID,只有TAG_ID一致才做处理
 
@@ -246,7 +206,7 @@ void Tag_Measure_Dis(void)
         //TODO
         dwt_rxenable(0);//这个后加的，默认tx后应该自动切换rx，但是目前debug 发现并没有自动打开，这里强制打开rx
 				uint32 tick1=portGetTickCount();
-        /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. See NOTE 8 below. */
+        /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. */
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
         {
 									if((portGetTickCount() - tick1) > 350)
@@ -284,7 +244,7 @@ void Tag_Measure_Dis(void)
                 poll_tx_ts = get_tx_timestamp_u64();
                 resp_rx_ts = get_rx_timestamp_u64();
 
-                /* Compute final message transmission time. See NOTE 9 below. */
+                /* Compute final message transmission time. */
                 final_tx_time = (resp_rx_ts + (RESP_RX_TO_FINAL_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
                 dwt_setdelayedtrxtime(final_tx_time);
 
@@ -296,7 +256,7 @@ void Tag_Measure_Dis(void)
                 final_msg_set_ts(&tx_final_msg[FINAL_MSG_RESP_RX_TS_IDX], resp_rx_ts);
                 final_msg_set_ts(&tx_final_msg[FINAL_MSG_FINAL_TX_TS_IDX], final_tx_ts);
 
-                /* Write and send final message. See NOTE 7 below. */
+                /* Write and send final message. */
                 tx_final_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
                 tx_final_msg[ALL_MSG_TAG_IDX] = TAG_ID;
                 dwt_writetxdata(sizeof(tx_final_msg), tx_final_msg, 0);
@@ -384,27 +344,8 @@ void Tag_Measure_Dis(void)
 
 }
 
-/**
-  * @brief  Main program.
-  * @param  None
-  * @retval None
-  */
-//   /*!< At this stage the microcontroller clock setting is already configured,
-//        this is done through SystemInit() function which is called from startup
-//        file (startup_stm32f10x_xx.s) before to branch to application main.
-//        To reconfigure the default setting of SystemInit() function, refer to
-//        system_stm32f10x.c file
-//      */
-
 double final_distance =  0;
 
-//=============================================================//
-/**************************************************************/
-/********More Information Please Visit Our Website*************/
-/***********************bphero.com.cn**************************/
-/**********************Version V1.1****************************/
-/**************************************************************/
-//=============================================================//
 int main(void)
 {
     uint8 anthor_index = 0;
@@ -449,7 +390,7 @@ int main(void)
     dwt_configure(&config);
     dwt_setleds(1);
 		
-    /* Apply default antenna delay value. See NOTE 1 below. */
+    /* Apply default antenna delay value. */
     dwt_setrxantennadelay(RX_ANT_DLY);
     dwt_settxantennadelay(TX_ANT_DLY);
     OLED_ShowString(0,0,"INIT PASS");
@@ -796,19 +737,6 @@ static void compute_angle_send_to_anthor0(int distance1, int distance2,int dista
 
 }
 
-
-
-/*! ------------------------------------------------------------------------------------------------------------------
- * @fn final_msg_set_ts()
- *
- * @brief Fill a given timestamp field in the final message with the given value. In the timestamp fields of the final
- *        message, the least significant byte is at the lower address.
- *
- * @param  ts_field  pointer on the first byte of the timestamp field to fill
- *         ts  timestamp value
- *
- * @return none
- */
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
 {
     int i;
@@ -821,13 +749,6 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
 
 #ifdef  USE_FULL_ASSERT
 
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
 void assert_failed(uint8_t* file, uint32_t line)
 {
     /* User can add his own implementation to report the file name and line number,
@@ -853,71 +774,3 @@ PUTCHAR_PROTOTYPE
     {}
     return ch;
 }
-
-
-/*****************************************************************************************************************************************************
- * NOTES:
- *
- * 1. The sum of the values is the TX to RX antenna delay, experimentally determined by a calibration process. Here we use a hard coded typical value
- *    but, in a real application, each device should have its own antenna delay properly calibrated to get the best possible precision when performing
- *    range measurements.
- * 2. The messages here are similar to those used in the DecaRanging ARM application (shipped with EVK1000 kit). They comply with the IEEE
- *    802.15.4 standard MAC data frame encoding and they are following the ISO/IEC:24730-62:2013 standard. The messages used are:
- *     - a poll message sent by the initiator to trigger the ranging exchange.
- *     - a response message sent by the responder allowing the initiator to go on with the process
- *     - a final message sent by the initiator to complete the exchange and provide all information needed by the responder to compute the
- *       time-of-flight (distance) estimate.
- *    The first 10 bytes of those frame are common and are composed of the following fields:
- *     - byte 0/1: frame control (0x8841 to indicate a data frame using 16-bit addressing).
- *     - byte 2: sequence number, incremented for each new frame.
- *     - byte 3/4: PAN ID (0xDECA).
- *     - byte 5/6: destination address, see NOTE 3 below.
- *     - byte 7/8: source address, see NOTE 3 below.
- *     - byte 9: function code (specific values to indicate which message it is in the ranging process).
- *    The remaining bytes are specific to each message as follows:
- *    Poll message:
- *     - no more data
- *    Response message:
- *     - byte 10: activity code (0x02 to tell the initiator to go on with the ranging exchange).
- *     - byte 11/12: activity parameter, not used for activity code 0x02.
- *    Final message:
- *     - byte 10 -> 13: poll message transmission timestamp.
- *     - byte 14 -> 17: response message reception timestamp.
- *     - byte 18 -> 21: final message transmission timestamp.
- *    All messages end with a 2-byte checksum automatically set by DW1000.
- * 3. Source and destination addresses are hard coded constants in this example to keep it simple but for a real product every device should have a
- *    unique ID. Here, 16-bit addressing is used to keep the messages as short as possible but, in an actual application, this should be done only
- *    after an exchange of specific messages used to define those short addresses for each device participating to the ranging exchange.
- * 4. Delays between frames have been chosen here to ensure proper synchronisation of transmission and reception of the frames between the initiator
- *    and the responder and to ensure a correct accuracy of the computed distance. The user is referred to DecaRanging ARM Source Code Guide for more
- *    details about the timings involved in the ranging process.
- * 5. This timeout is for complete reception of a frame, i.e. timeout duration must take into account the length of the expected frame. Here the value
- *    is arbitrary but chosen large enough to make sure that there is enough time to receive the complete final frame sent by the responder at the
- *    110k data rate used (around 3.5 ms).
- * 6. In a real application, for optimum performance within regulatory limits, it may be necessary to set TX pulse bandwidth and TX power, (using
- *    the dwt_configuretxrf API call) to per device calibrated values saved in the target system or the DW1000 OTP memory.
- * 7. We use polled mode of operation here to keep the example as simple as possible but all status events can be used to generate interrupts. Please
- *    refer to DW1000 User Manual for more details on "interrupts". It is also to be noted that STATUS register is 5 bytes long but, as the event we
- *    use are all in the first bytes of the register, we can use the simple dwt_read32bitreg() API call to access it instead of reading the whole 5
- *    bytes.
- * 8. Timestamps and delayed transmission time are both expressed in device time units so we just have to add the desired response delay to poll RX
- *    timestamp to get response transmission time. The delayed transmission time resolution is 512 device time units which means that the lower 9 bits
- *    of the obtained value must be zeroed. This also allows to encode the 40-bit value in a 32-bit words by shifting the all-zero lower 8 bits.
- * 9. dwt_writetxdata() takes the full size of the message as a parameter but only copies (size - 2) bytes as the check-sum at the end of the frame is
- *    automatically appended by the DW1000. This means that our variable could be two bytes shorter without losing any data (but the sizeof would not
- *    work anymore then as we would still have to indicate the full length of the frame to dwt_writetxdata()). It is also to be noted that, when using
- *    delayed send, the time set for transmission must be far enough in the future so that the DW1000 IC has the time to process and start the
- *    transmission of the frame at the wanted time. If the transmission command is issued too late compared to when the frame is supposed to be sent,
- *    this is indicated by an error code returned by dwt_starttx() API call. Here it is not tested, as the values of the delays between frames have
- *    been carefully defined to avoid this situation.
- * 10. The high order byte of each 40-bit time-stamps is discarded here. This is acceptable as, on each device, those time-stamps are not separated by
- *     more than 2**32 device time units (which is around 67 ms) which means that the calculation of the round-trip delays can be handled by a 32-bit
- *     subtraction.
- * 11. The user is referred to DecaRanging ARM application (distributed with EVK1000 product) for additional practical example of usage, and to the
- *     DW1000 API Guide for more details on the DW1000 driver functions.
- ****************************************************************************************************************************************************/
-
-/**
-  * @}
-  */
-/******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
