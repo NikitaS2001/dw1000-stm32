@@ -2,7 +2,7 @@
 .\stm3210e-eval\port.o: ..\platform\deca_sleep.h
 .\stm3210e-eval\port.o: ..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\stm32f10x.h
 .\stm3210e-eval\port.o: ..\..\..\Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
-.\stm3210e-eval\port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\stm3210e-eval\port.o: F:\Programs\Keil\ARM\ARMCC\Bin\..\include\stdint.h
 .\stm3210e-eval\port.o: ..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\system_stm32f10x.h
 .\stm3210e-eval\port.o: ..\stm32f10x_conf.h
 .\stm3210e-eval\port.o: ..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h
@@ -31,7 +31,7 @@
 .\stm3210e-eval\port.o: ..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc\misc.h
 .\stm3210e-eval\port.o: ..\platform\port.h
 .\stm3210e-eval\port.o: ..\platform\lcd_oled.h
-.\stm3210e-eval\port.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\stm3210e-eval\port.o: F:\Programs\Keil\ARM\ARMCC\Bin\..\include\stdlib.h
 .\stm3210e-eval\port.o: ..\..\..\Utilities\STM32_EVAL\stm32_eval.h
 .\stm3210e-eval\port.o: ..\..\..\Utilities\STM32_EVAL\stm3210e_eval/stm3210e_eval.h
 .\stm3210e-eval\port.o: ..\..\..\Utilities\STM32_EVAL\stm32_eval.h

@@ -14,6 +14,7 @@
 #include "AT24C02.h"
 #include "stm32_eval.h"
 #include "lib.h"
+#include "mavlink.h"
 
 
 extern char dist_str[16];
