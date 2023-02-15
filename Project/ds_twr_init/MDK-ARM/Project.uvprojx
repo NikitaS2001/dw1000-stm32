@@ -1512,13 +1512,6 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
-          <Files>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\readme.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>platform</GroupName>
@@ -1539,19 +1532,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3172,13 +3155,6 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
-          <Files>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\readme.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>platform</GroupName>
@@ -3199,19 +3175,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4934,13 +4900,6 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
-          <Files>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\readme.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>platform</GroupName>
@@ -4961,19 +4920,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6798,13 +6747,6 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
-          <Files>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\readme.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>platform</GroupName>
@@ -6825,19 +6767,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -8459,13 +8391,6 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
-          <Files>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\readme.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>platform</GroupName>
@@ -8486,19 +8411,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -10272,13 +10187,6 @@
         </Group>
         <Group>
           <GroupName>Doc</GroupName>
-          <Files>
-            <File>
-              <FileName>readme.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\readme.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>platform</GroupName>
@@ -10299,19 +10207,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
