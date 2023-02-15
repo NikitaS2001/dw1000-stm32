@@ -55,28 +55,14 @@ unsigned char AT24C02_Read(I2C_TypeDef* I2Cx, unsigned char AddressDevice, unsig
 
 	return ReceiveData;
 }
-/* STM32 I2C ???? */
 #define I2C_Speed              400000
  
-/* ???????STM32???I2C????????? */
 #define I2C1_OWN_ADDRESS7      0X0A   
  
-/* AT24C01/02???8??? */
 #define I2C_PageSize           8
- 
-/* AT24C04/08A/16A???16??? */
-//#define I2C_PageSize           16			
  
 uint16_t EEPROM_ADDRESS = EEPROM_Block0_ADDRESS;
 
-/**
-  * @brief   ??????????I2C EEPROM?
-  * @param   
-  *		@arg pBuffer:?????
-  *		@arg WriteAddr:???
-  *     @arg NumByteToWrite:?????
-  * @retval  ?
-  */
 void I2C_EE_BufferWrite(u8* pBuffer, u8 WriteAddr, u16 NumByteToWrite)
 {
   u8 NumOfPage = 0, NumOfSingle = 0, Addr = 0, count = 0;
@@ -153,13 +139,6 @@ void I2C_EE_BufferWrite(u8* pBuffer, u8 WriteAddr, u16 NumByteToWrite)
   }  
 }
  
-/**
-  * @brief   ??????I2C EEPROM?
-  * @param   
-  *		@arg pBuffer:?????
-  *		@arg WriteAddr:??? 
-  * @retval  ?
-  */
 void I2C_EE_ByteWrite(u8* pBuffer, u8 WriteAddr)
 {
   /* Send STRAT condition */
@@ -190,20 +169,11 @@ void I2C_EE_ByteWrite(u8* pBuffer, u8 WriteAddr)
   I2C_GenerateSTOP(I2C1, ENABLE);
 }
  
-/**
-  * @brief   ?EEPROM??????????????,?????????
-  *          ????EEPROM????,AT24C02???8???
-  * @param   
-  *		@arg pBuffer:?????
-  *		@arg WriteAddr:???
-  *     @arg NumByteToWrite:?????
-  * @retval  ?
-  */
 void I2C_EE_PageWrite(u8* pBuffer, u8 WriteAddr, u8 NumByteToWrite)
 {
-    while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY)); // Added by Najoua 27/08/2008
+    while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY));
     
-  /* ??start?? */
+  /* start */
   I2C_GenerateSTART(I2C1, ENABLE);
   
   /* Test on EV5 and clear it */
@@ -238,18 +208,10 @@ void I2C_EE_PageWrite(u8* pBuffer, u8 WriteAddr, u8 NumByteToWrite)
   I2C_GenerateSTOP(I2C1, ENABLE);
 }
  
-/**
-  * @brief   ?EEPROM???????? 
-  * @param   
-  *		@arg pBuffer:???EEPROM???????????
-  *		@arg WriteAddr:?????EEPROM???
-  *     @arg NumByteToWrite:??EEPROM??????
-  * @retval  ?
-  */
 void I2C_EE_BufferRead(u8* pBuffer, u8 ReadAddr, u16 NumByteToRead)
 {  
   //*((u8 *)0x4001080c) |=0x80; 
-    while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY)); // Added by Najoua 27/08/2008    
+    while(I2C_GetFlagStatus(I2C1, I2C_FLAG_BUSY)); 
     
   /* Send START condition */
   I2C_GenerateSTART(I2C1, ENABLE);
@@ -315,11 +277,6 @@ void I2C_EE_BufferRead(u8* pBuffer, u8 ReadAddr, u16 NumByteToRead)
   I2C_AcknowledgeConfig(I2C1, ENABLE);
 }
  
-/**
-  * @brief  Wait for EEPROM Standby state 
-  * @param  ?
-  * @retval ?
-  */
 void I2C_EE_WaitEepromStandbyState(void)      
 {
   vu16 SR1_Tmp = 0;
