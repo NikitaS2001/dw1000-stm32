@@ -19,3 +19,6 @@
 
 #JLINK file
 JLinkLog.txt
+
+# Temp files
+*.tmp
