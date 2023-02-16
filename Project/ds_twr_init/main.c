@@ -7,7 +7,6 @@
 #include "deca_sleep.h"
 //#include "lcd.h"
 #include "port.h"
-//#include "lcd_oled.h"
 #include "trilateration.h"
 #include <math.h>
 #include "kalman.h"
@@ -187,15 +186,14 @@ void Tag_Measure_Dis(void)
 {
     uint8 dest_anthor = 0,frame_len = 0;
     float final_distance = 0;
-	frame_seq_nb=0;//change by johhn
+	frame_seq_nb=0;
     for(dest_anthor = 0 ;  dest_anthor<ANCHOR_MAX_NUM; dest_anthor++)
     {
         dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
         dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
         /* Write frame data to DW1000 and prepare transmission. */
         tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
-        tx_poll_msg[ALL_MSG_TAG_IDX] = TAG_ID;//基站收到标签的信息，里面有TAG_ID,在基站回复标签的时候，也需要指定TAG_ID,只有TAG_ID一致才做处理
-
+        tx_poll_msg[ALL_MSG_TAG_IDX] = TAG_ID;
         dwt_writetxdata(sizeof(tx_poll_msg), tx_poll_msg, 0);
         dwt_writetxfctrl(sizeof(tx_poll_msg), 0);
 
@@ -205,8 +203,8 @@ void Tag_Measure_Dis(void)
 
         //GPIO_SetBits(GPIOA,GPIO_Pin_2);
         //TODO
-        dwt_rxenable(0);//这个后加的，默认tx后应该自动切换rx，但是目前debug 发现并没有自动打开，这里强制打开rx
-				uint32 tick1=portGetTickCount();
+        dwt_rxenable(0);
+        uint32 tick1=portGetTickCount();
         /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. */
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
         {
@@ -230,7 +228,7 @@ void Tag_Measure_Dis(void)
                 dwt_readrxdata(rx_buffer, frame_len, 0);
             }
 
-            if(rx_buffer[ALL_MSG_TAG_IDX] != TAG_ID)//检测TAG_ID
+            if(rx_buffer[ALL_MSG_TAG_IDX] != TAG_ID)//锟斤拷锟絋AG_ID
                 continue;
             rx_buffer[ALL_MSG_TAG_IDX] = 0;
 
@@ -272,7 +270,7 @@ void Tag_Measure_Dis(void)
                 { 
 										if((portGetTickCount() - tick1) > 500)
 									{
-										break;//change by johhn
+										break;
 									}
 								
 								};
@@ -334,8 +332,6 @@ void Tag_Measure_Dis(void)
         {
             /* Clear RX error events in the DW1000 status register. */
             // sprintf(dist_str, "%08x",status_reg);
-            // OLED_ShowString(0, 2,"           ");
-            // OLED_ShowString(0, 2,dist_str);
             dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_ERR);
         }
         /* Execute a delay between ranging exchanges. */
@@ -374,11 +370,11 @@ int main(void)
         printf("dwm1000 init fail!\r\n");
         while (1)
         {
-					  //STM_EVAL_LEDOn(LED1);
-					GPIO_SetBits(GPIOC,GPIO_Pin_13);
+            //STM_EVAL_LEDOn(LED1);
+            GPIO_SetBits(GPIOC,GPIO_Pin_13);
             deca_sleep(1000);
             //STM_EVAL_LEDOff(LED1);
-					GPIO_ResetBits(GPIOC,GPIO_Pin_13);
+            GPIO_ResetBits(GPIOC,GPIO_Pin_13);
             deca_sleep(1000);
 					
  
@@ -386,7 +382,7 @@ int main(void)
     }
     spi_set_rate_high();
 
-    /* Configure DW1000. See NOTE 6 below. */
+    /* Configure DW1000. */
     dwt_configure(&config);
     dwt_setleds(1);
 		
@@ -413,7 +409,7 @@ int main(void)
     int index = 0 ;
 		
 	extern UserSet UserSetNow;
-	uint16_t buff[3]={1,0,0xff};//默认值
+	uint16_t buff[3]={1,0,0xff};
 	FLASH_ReadMoreData(USER_FLASH_BASE,buff,3);
 	if(buff[0]==1)
 	{
@@ -464,7 +460,7 @@ if(UserSetNow.ANCHOR_TAG==0)
 	
 	printf("device:TAG ID:%d\r\n",UserSetNow.ID);
 		
-    /* Set expected response's delay and timeout. See NOTE 4 and 5 below.
+    /* Set expected response's delay and timeout.
      * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
     dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
     dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
@@ -602,8 +598,6 @@ static void compute_angle_send_to_anthor0(int distance1, int distance2,int dista
     angle  = acos(cos)*180/3.1415926;
     printf("cos = %f, arccos = %f\r\n",cos,angle);
     sprintf(dist_str, "angle: %3.2f m", angle);
-    OLED_ShowString(0, 6,"            ");
-    OLED_ShowString(0, 6,dist_str);
 
     if(dis1 > 1)
     {
@@ -695,24 +689,22 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
     }
 }
 
-#ifdef  USE_FULL_ASSERT
+// #ifdef  USE_FULL_ASSERT
 
-void assert_failed(uint8_t* file, uint32_t line)
-{
-    /* User can add his own implementation to report the file name and line number,
-       ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+// void assert_failed(uint8_t* file, uint32_t line)
+// {
+//     /* User can add his own implementation to report the file name and line number,
+//        ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
 
-    /* Infinite loop */
-    while (1)
-    {
-    }
-}
-#endif
+//     /* Infinite loop */
+//     while (1)
+//     {
+//     }
+// }
+// #endif
 
 PUTCHAR_PROTOTYPE
 {
-    /* Place your implementation of fputc here */
-    /* 清SR寄存器中的TC标志 */
 
     USART_ClearFlag(EVAL_COM1,USART_FLAG_TC);
     /* e.g. write a character to the USART */
