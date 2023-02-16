@@ -4,8 +4,8 @@
 #include "deca_sleep.h"
 
 #include <math.h>
-//OLED的显存
-//存放格式如下.
+//OLED memory
+//The storage format is as follows.
 //[0]0 1 2 3 ... 127
 //[1]0 1 2 3 ... 127
 //[2]0 1 2 3 ... 127
@@ -20,7 +20,7 @@
 ///I2C related
 /*******************************************************************************
 * Function Name  : I2C_delay
-* Description    : 延迟时间
+* Description    : delay
 * Input          : None
 * Output         : None
 * Return         : None
@@ -32,12 +32,12 @@ static void I2C_delay(uint16_t cnt)
 }
 
 #define IIC_TIMEOUT 100
-int IIc_flag = 1 ;//存在1， 不存在0
+int IIc_flag = 1 ;
 /*******************************************************************************
 * Function Name  : I2C_AcknowledgePolling
-* Description    : 等待获取I2C总线控制权 判断忙状态
-* Input          : - I2Cx:I2C寄存器基址
-*                  - I2C_Addr:从器件地址
+* Description    : Waiting for the right to control the I2C bus. Assessment of employment status
+* Input          : - I2Cx:I2C register base address
+*                  - I2C_Addr:slave address
 * Output         : None
 * Return         : None
 * Attention      : None
@@ -49,34 +49,32 @@ static void I2C_AcknowledgePolling(I2C_TypeDef *I2Cx,uint8_t I2C_Addr)
     timeout = IIC_TIMEOUT;
     do
     {
-        I2C_GenerateSTART(I2Cx, ENABLE); /*起始位*/
-        /*读SR1*/
+        I2C_GenerateSTART(I2Cx, ENABLE);
         SR1_Tmp = I2C_ReadRegister(I2Cx, I2C_Register_SR1);
-        /*器件地址(写)*/
         I2C_Send7bitAddress(I2Cx, I2C_Addr, I2C_Direction_Transmitter);
 
     }
     while(!(I2C_ReadRegister(I2Cx, I2C_Register_SR1) & 0x0002)&&(timeout--));
     I2C_ClearFlag(I2Cx, I2C_FLAG_AF);
-    I2C_GenerateSTOP(I2Cx, ENABLE);  /*停止位*/
+    I2C_GenerateSTOP(I2Cx, ENABLE);
 }
 
 
 /*******************************************************************************
-* Function Name  : I2C_WriteOneByte
-* Description    : 通过指定I2C接口写入一个字节数据
-* Input          : - I2Cx:I2C寄存器基址
-*                  - I2C_Addr:从器件地址
-*                  - addr:预写入字节地址
-*                  - value:写入数据
-* Output         : None
-* Return         : 成功返回0
-* Attention      : None
+* Function Name: I2C_WriteOneByte
+* Description : Write a byte of data through the specified I2C interface
+* Input : - I2Cx: I2C register base address
+                   - I2C_Addr: slave device address
+                   - addr: pre-written byte address
+                   - value: write data
+* Output : None
+* Return : return 0 successfully
+* Attention : None
 *******************************************************************************/
 uint8_t I2C_WriteOneByte(I2C_TypeDef *I2Cx,uint8_t I2C_Addr,uint8_t addr,uint8_t value)
 {
     uint16_t timeout = 0;
-    /* 起始位 */
+    /* start bit */
     I2C_GenerateSTART(I2Cx, ENABLE);
     timeout = IIC_TIMEOUT;
     while(!I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_MODE_SELECT) &&(timeout--));
@@ -87,15 +85,15 @@ uint8_t I2C_WriteOneByte(I2C_TypeDef *I2Cx,uint8_t I2C_Addr,uint8_t addr,uint8_t
 
     timeout = IIC_TIMEOUT;
     while(!I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED)&&(timeout--));
-    /*发送地址*/
+    /*sending address*/
     I2C_SendData(I2Cx, addr);
     timeout = IIC_TIMEOUT;
     while(!I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_BYTE_TRANSMITTED)&&(timeout--));
-    /* 写一个字节*/
+    /*write a byte*/
     I2C_SendData(I2Cx, value);
     timeout = IIC_TIMEOUT;
     while(!I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_BYTE_TRANSMITTED)&&(timeout--));
-    /* 停止位*/
+    /*stop bit*/
     I2C_GenerateSTOP(I2Cx, ENABLE);
     /*stop bit flag*/
 		timeout = IIC_TIMEOUT;
@@ -154,16 +152,16 @@ uint8_t I2C_ReadOneByte(I2C_TypeDef* I2Cx, unsigned char AddressDevice, unsigned
 
 
 /*******************************************************************************
-* Function Name  : I2C_Write
-* Description    : 通过指定I2C接口写入多个字节数据
-* Input          : - I2Cx:I2C寄存器基址
-*                  - I2C_Addr:从器件地址
-*                  - addr:预写入字节地址
-*                  - *buf:预写入数据存储位置
-*                  - num:写入字节数
-* Output         : None
-* Return         : 成功返回0
-* Attention      : None
+* Function Name : I2C_Write
+* Description : Write multiple bytes of data through the specified I2C interface
+* Input : - I2Cx: I2C register base address
+                   - I2C_Addr: slave device address
+                   - addr: pre-written byte address
+                   - *buf: pre-written data storage location
+                   - num: the number of bytes written
+* Output : None
+* Return : return 0 successfully
+* Attention : None
 *******************************************************************************/
 uint8_t I2C_Write(I2C_TypeDef *I2Cx,uint8_t I2C_Addr,uint8_t addr,uint8_t *buf,uint16_t num)
 {
@@ -184,16 +182,16 @@ uint8_t I2C_Write(I2C_TypeDef *I2Cx,uint8_t I2C_Addr,uint8_t addr,uint8_t *buf,u
 
 
 /*
-//发送数据
-//slaveAddr：从机7位地址，第八位的方向会自动加上
-//pdata：要发送的数据地址
-//len：要发送的数据长度
+//send data
+//slaveAddr: The 7-bit address of the slave machine, the direction of the eighth bit will be added automatically
+//pdata: the address of the data to be sent
+//len: the length of the data to be sent
 */
 uint8_t hal_i2c1_send_data1(I2C_TypeDef *I2Cx,uint8_t I2C_Addr, uint8_t pdata)
 {
 		
 		uint16_t timeout = 0;
-    /* 起始位 */
+    /* start bit */
     I2C_GenerateSTART(I2Cx, ENABLE);
     timeout = IIC_TIMEOUT;
     while(!I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_MODE_SELECT) &&(timeout--));
@@ -203,10 +201,10 @@ uint8_t hal_i2c1_send_data1(I2C_TypeDef *I2Cx,uint8_t I2C_Addr, uint8_t pdata)
     if(timeout == 0)
         IIc_flag = 0;
     timeout = IIC_TIMEOUT;
-    while(!I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED) &&(timeout--) );//唤醒设备
+    while(!I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED) &&(timeout--) );//wake up device
 		//printf("\r\nweak up\r\n");
 		
-    /*发送数据*/
+    /*send data*/
 			
 		I2C_SendData(I2Cx,pdata);
 		timeout = IIC_TIMEOUT;
@@ -215,7 +213,7 @@ uint8_t hal_i2c1_send_data1(I2C_TypeDef *I2Cx,uint8_t I2C_Addr, uint8_t pdata)
 		//printf("\r\nsend data\r\n");
 
 
-    /* 停止位*/
+    /*stop bit*/
     I2C_GenerateSTOP(I2Cx, ENABLE);
     /*stop bit flag*/
 		timeout = IIC_TIMEOUT;
@@ -231,7 +229,7 @@ uint8_t hal_i2c1_send_data1(I2C_TypeDef *I2Cx,uint8_t I2C_Addr, uint8_t pdata)
 }
 uint8_t hal_i2c1_send_data(I2C_TypeDef *I2Cx,uint8_t I2C_Addr, uint8_t *pdata,uint32_t u32_len)
 {
-		 /*发送数据*/
+		 /*send data*/
 		for(uint32_t u32_count=0;u32_count<(u32_len);u32_count++){
 				
 			
@@ -278,7 +276,7 @@ int hal_i2c1_read_data(I2C_TypeDef *I2Cx, unsigned char AddressDevice, uint8_t *
     while( !I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_RECEIVER_MODE_SELECTED)&&(timeout--) ); // wait Send Address Device As Receiver
 		//printf("\r\nread rec\r\n");
 		
-    /*接受数据*/
+    /*data acceptance*/
 		for(uint32_t u32_count=0;u32_count<(u32_len-1);u32_count++){
 				timeout = IIC_TIMEOUT;
 			while( !I2C_CheckEvent(I2Cx, I2C_EVENT_MASTER_BYTE_RECEIVED) &&(timeout--) ); // wait Receive a Byte
@@ -309,27 +307,27 @@ int hal_i2c1_read_data(I2C_TypeDef *I2Cx, unsigned char AddressDevice, uint8_t *
 
 
 #define SHT20_ADDR					0x80//0x40
-#define SHT20_WRITE_REG				0xE6	//写寄存器指令
-#define SHT20_READ_REG				0xE7	//读取寄存器指令
-#define TRIG_TEMP_MEASUREMENT_POLL	0xF3	//触发温度测量(非保持主机)
-#define TRIG_HUMI_MEASUREMENT_POLL	0xF5	//触发湿度测量(非保持主机)
-#define TRIG_RESET					0xFE	//复位指令
+#define SHT20_WRITE_REG				0xE6	//write register instruction
+#define SHT20_READ_REG				0xE7	//read register instruction
+#define TRIG_TEMP_MEASUREMENT_POLL	0xF3	//trigger temperature measurement
+#define TRIG_HUMI_MEASUREMENT_POLL	0xF5	//trigger humidity measurement
+#define TRIG_RESET					0xFE	//reset command
 
-//复位并重置传感器
+//reset the sensor
 void SHT20_init(void){
 	
 	uint8_t u8_cmd_buf[2]={0},u8_reg=0;
 
-	//复位
-	u8_cmd_buf[0]=TRIG_RESET;	 //发送复位指令
+	//reset
+	u8_cmd_buf[0]=TRIG_RESET;	 //send reset command
 	
 	hal_i2c1_send_data(I2C1,SHT20_ADDR,u8_cmd_buf,1);
 
-	//deca_sleep(100);	//复位时间小于15ms
+	//deca_sleep(100);	//reset time is less than 15ms
 	I2C_delay(9000);
 	
-	//读寄存器
-	u8_cmd_buf[0]=SHT20_READ_REG;	 //发送读取寄存器指令
+	//read register
+	u8_cmd_buf[0]=SHT20_READ_REG;	 //send read register command
 	hal_i2c1_send_data(I2C1,SHT20_ADDR,u8_cmd_buf,1);
 
 	
@@ -338,15 +336,15 @@ void SHT20_init(void){
 	
 
 	//printf("SHT20_WRITE_REG\r\n");
-	//写寄存器
-	//u8_cmd_buf[0]=SHT20_WRITE_REG;	 //发送写寄存器指令
-	//u8_cmd_buf[1]=0x02;				 //寄存器的值
+	//write register
+	//u8_cmd_buf[0]=SHT20_WRITE_REG;	 //send write register command
+	//u8_cmd_buf[1]=0x02;				 //register value
 	//hal_i2c1_send_data(I2C1,SHT20_ADDR,u8_cmd_buf,2);
 	I2C_WriteOneByte(I2C1,0x80,SHT20_WRITE_REG,0x2);
 	
 	
-	//读寄存器
-	u8_cmd_buf[0]=SHT20_READ_REG;	 //发送读取寄存器指令
+	//read register
+	u8_cmd_buf[0]=SHT20_READ_REG;	 //send read register command
 	hal_i2c1_send_data(I2C1,SHT20_ADDR,u8_cmd_buf,1);
 	
 	hal_i2c1_read_data(I2C1,SHT20_ADDR,&u8_reg,1);
@@ -355,12 +353,12 @@ void SHT20_init(void){
 
 	return;
 }
-//读取温度(非主机保持模式)
+//read temperature
 int SHT20_read_tem(float *p_temperature){
 	
 	uint8_t u8_cmd_buf[2]={0},u8_data_buf[3]={0},u8_count=0;
 
-	u8_cmd_buf[0]=TRIG_TEMP_MEASUREMENT_POLL;	 //触发温度测量(非保持主机)
+	u8_cmd_buf[0]=TRIG_TEMP_MEASUREMENT_POLL;	 //trigger humidity measurement
 	hal_i2c1_send_data(I2C1,SHT20_ADDR,u8_cmd_buf,1);
 	
 int h_ret=1;
@@ -368,9 +366,10 @@ int h_ret=1;
 	while(1)
 		{
 			I2C_delay(0xfffe);
-			h_ret=hal_i2c1_read_data(I2C1,SHT20_ADDR,u8_data_buf,3);//一直读取，直到读取成功或者超时
+            //keep reading until the read succeeds or times out
+			h_ret=hal_i2c1_read_data(I2C1,SHT20_ADDR,u8_data_buf,3);
 			if(0==h_ret){
-				//应答成功跳出循环
+				//the answer is successful and jump out of the loop
 				break;
 			}
 			
@@ -383,19 +382,19 @@ int h_ret=1;
 
 	u8_data_buf[1] &= ~0x0003;
 	
-	//处理数据
+	//data processing
 	*p_temperature=(u8_data_buf[0]<<8)|u8_data_buf[1];
 	*p_temperature=((*p_temperature)*0.00268127)-46.85;
 
 	return 0;
 }
 
-//读取湿度
+//read humidity
 int SHT20_read_hum(float *p_humidity){
 	
 	uint8_t u8_cmd_buf[2]={0},u8_data_buf[3]={0},u8_count=0;
 
-	u8_cmd_buf[0]=TRIG_HUMI_MEASUREMENT_POLL;	 //触发湿度测量(非保持主机)
+	u8_cmd_buf[0]=TRIG_HUMI_MEASUREMENT_POLL;	 //trigger humidity measurement
 	hal_i2c1_send_data(I2C1,SHT20_ADDR,u8_cmd_buf,1);
 	
 
@@ -403,9 +402,10 @@ int SHT20_read_hum(float *p_humidity){
 	int h_ret=1;
 	while(1){
 		I2C_delay(0xfffe);
-		h_ret=hal_i2c1_read_data(I2C1,SHT20_ADDR,u8_data_buf,3);//一直读取，直到读取成功或者超时
+        //keep reading until the read succeeds or times out
+		h_ret=hal_i2c1_read_data(I2C1,SHT20_ADDR,u8_data_buf,3);
 		if(0==h_ret){
-			//应答成功跳出循环
+			//the answer is successful and jump out of the loop
 			break;
 		}
 		if(u8_count>20){
@@ -417,7 +417,7 @@ int SHT20_read_hum(float *p_humidity){
 
 	u8_data_buf[1] &= ~0x0003;
 	
-	//处理数据
+	//data processing
 	*p_humidity=(u8_data_buf[0]<<8)|u8_data_buf[1];
 	*p_humidity=((*p_humidity)*0.00190735)-6;
 
@@ -431,7 +431,7 @@ int SHT20_read_hum(float *p_humidity){
 #define LIS2DH12_FROM_FS_16g_HR_TO_mg(lsb) (float)((int16_t)lsb>>4)*12.0f
 #define LIS2DH12_FROM_LSB_TO_degC_HR(lsb)  (float)((int16_t)lsb>>6)/4.0f+25.0f
 
-/* iic 通讯相关操作 */
+/* iic communication related operations */
 int32_t drv_lis2dh12_iic_write_byte(uint8_t addr, uint8_t data)
 {
 	I2C_WriteOneByte(I2C1,0x32,addr,data);
@@ -479,39 +479,39 @@ int32_t drv_lis2dh12_iic_read_byte(uint8_t AddressByte, uint8_t* data)
 }
 
 #define lis2dh12_iic_write_byte drv_lis2dh12_iic_write_byte
-/* lis2dh12 init 配置检测阈值与中断 */
+/* lis2dh12 init configure detection thresholds and interrupts */
 int32_t drv_lis2dh12_init()
 {
 /* Initialization of sensor */
-	lis2dh12_iic_write_byte(0x20, 0x37);	/* CTRL_REG1(20h): 关闭sensor，设置进入掉电模式 ODR 25HZ */
-//	lis2dh12_iic_write_byte(0x20, 0x57);	/* CTRL_REG1(20h): 关闭sensor，设置进入低功耗模式 ODR 100HZ */
-	lis2dh12_iic_write_byte(0x21, 0x03);	/* CTRL_REG2(21h): IA1、IA2 开启高通滤波 bc */
-	lis2dh12_iic_write_byte(0x22, 0xc0);	/* CTRL_REG3(22h): 0x80 使能单击中断到INT_1 INT_2 */
-	lis2dh12_iic_write_byte(0x23, 0x88);  /* CTRL_REG4(23h): 使能快，数据更新，全量程+/-2G，非常精度模式 */
-//	lis2dh12_iic_write_byte(0x25, 0x00);  /* CTRL_REG6(25h): 高电平(上升沿)触发中断 */
+	lis2dh12_iic_write_byte(0x20, 0x37);	/* CTRL_REG1(20h): Turn off the sensor, set to enter power-down mode ODR 25HZ */
+//	lis2dh12_iic_write_byte(0x20, 0x57);	/* CTRL_REG1(20h): Turn off the sensor, set to enter low power consumption mode ODR 100HZ */
+	lis2dh12_iic_write_byte(0x21, 0x03);	/* CTRL_REG2(21h): IA1, IA2 enable high-pass filter bc */
+	lis2dh12_iic_write_byte(0x22, 0xc0);    /* CTRL_REG3(22h): 0x80 Enable click interrupt to INT_1 INT_2 */
+	lis2dh12_iic_write_byte(0x23, 0x88);    /* CTRL_REG4(23h): enable fast, data update, full scale +/-2G, very precision mode */
+//	lis2dh12_iic_write_byte(0x25, 0x00);    /* CTRL_REG6(25h): High level (rising edge) triggers interrupt */
 	
-	/* INT1 翻转检测，中断*/							//0x6a
-	lis2dh12_iic_write_byte(0x30, 0x7f);  /* INT1_CFG(30h): 使能，6D X/Y/Z任一超过阈值中断 */
-//	lis2dh12_iic_write_byte(0x30, 0x4f);  /* INT1_CFG(30h): 使能，6D X/Y任一超过阈值中断 */
-//  lis2dh12_iic_write_byte(0x31, 0x20);  /* INT1_SRC(31h): 设置中断源 */
+	/* INT1 toggle detection, interrupt*/ //0x6a
+	lis2dh12_iic_write_byte(0x30, 0x7f);  /* INT1_CFG(30h): Enable, 6D X/Y/Z cross threshold interrupt */
+//	lis2dh12_iic_write_byte(0x30, 0x4f);  /* INT1_CFG(30h): Enable, 6D X/Y either exceeds the threshold interrupt */
+//  lis2dh12_iic_write_byte(0x31, 0x20);  /* INT1_SRC(31h): Set interrupt source */
  
-	lis2dh12_iic_write_byte(0x32, 0x02);  	/* INT1_THS(32h): 设置中断阀值 0x10: 16*2(FS)  0x20: 32*16(FS) */
+	lis2dh12_iic_write_byte(0x32, 0x02);  	/* INT1_THS(32h): Set interrupt threshold 0x10: 16*2(FS) 0x20: 32*16(FS) */
  
-//	lis2dh12_iic_write_byte(0x33, 0x02);  	/* INT1_DURATION(33h): 1LSB=1/ODR  如果ODR=25HZ  那么1LSB=40ms 设置延时 1s,对应25->0x19 */
-//	lis2dh12_iic_write_byte(0x33, 0x03);  /* INT1_DURATION(33h): 1LSB=1/ODR  如果ODR=50HZ   那么1LSB=20ms 设置延时 1s,对应50->0x32 */
-  lis2dh12_iic_write_byte(0x33, 0x03);  	/* INT1_DURATION(33h): 1LSB=1/ODR  如果ODR=100HZ  那么1LSB=10ms 设置延时 1s,对应100->0x64 */
+//	lis2dh12_iic_write_byte(0x33, 0x02);  	/* INT1_DURATION(33h): 1LSB=1/ODR If ODR=25HZ, then 1LSB=40ms, set the delay to 1s, corresponding to 25->0x19 */
+//	lis2dh12_iic_write_byte(0x33, 0x03);  /* INT1_DURATION(33h): 1LSB=1/ODR If ODR=50HZ, then 1LSB=20ms, set the delay to 1s, corresponding to 50->0x32 */
+  lis2dh12_iic_write_byte(0x33, 0x03);  	/* INT1_DURATION(33h): 1LSB=1/ODR If ODR=100HZ, then 1LSB=10ms, set the delay to 1s, corresponding to 100->0x64 */
  
 	
-//	/* INT2 单击中断 */
+//	/* INT2 click interrupt */
 ////	lis2dh12_iic_write_byte(0x24, 0x01);	/* CTRL_REG5(24h):  */
-//	lis2dh12_iic_write_byte(0x25, 0xa0);  /* CTRL_REG6(25h): Click interrupt on INT2 pin */
+//	lis2dh12_iic_write_byte(0x25, 0xa0);  /f* CTRL_REG6(25h): Click interrupt on INT2 pin */
 //
-//	lis2dh12_iic_write_byte(0x38, 0x15);	/* CLICK_CFG (38h): 单击识别中断使能 */
+//	lis2dh12_iic_write_byte(0x38, 0x15);	/* CLICK_CFG (38h): Click recognition interrupt enable */
 ////	lis2dh12_iic_write_byte(0x39, 0x10);
-//	lis2dh12_iic_write_byte(0x3a, 0x7f);  /* CLICK_THS (3Ah): 单击阀值 */
-//	lis2dh12_iic_write_byte(0x3b, 0xff);  /* TIME_LIMIT (3Bh): 时间限制窗口6 ODR 1LSB=1/ODR 1LSB=1/100HZ,10ms,设置延时1s,对应100—>0x64*/
-//	lis2dh12_iic_write_byte(0x3c, 0xff);  /* TIME_LATENCY (3Ch): 中断电平持续时间1 ODR=10ms */
-//	lis2dh12_iic_write_byte(0x3d, 0x01);  /* TIME_WINDOW (3Dh):  单击时间窗口 */
+//	lis2dh12_iic_write_byte(0x3a, 0x7f);  /* CLICK_THS (3Ah): click threshold */
+//	lis2dh12_iic_write_byte(0x3b, 0xff);  /* TIME_LIMIT (3Bh): Time limit window 6 ODR 1LSB=1/ODR 1LSB=1/100HZ, 10ms, set delay 1s, corresponding to 100—>0x64*/
+//	lis2dh12_iic_write_byte(0x3c, 0xff);  /* TIME_LATENCY (3Ch): Interrupt level duration 1 ODR=10ms */
+//	lis2dh12_iic_write_byte(0x3d, 0x01);  /* TIME_WINDOW (3Dh):  click time window */
 	
 	/* Start sensor */
 //	lis2dh12_iic_write_byte(0x20, 0x37);
@@ -548,7 +548,7 @@ int32_t drv_lis2dh12_initqq()
 	return 0;
 }
 
-/* 获取当前倾斜角度 */
+/* Get the current tilt angle */
 int drv_lis2dh12_get_angle( float *get)
 {
 	;
@@ -564,7 +564,7 @@ int drv_lis2dh12_get_angle( float *get)
 	}
 		
 	
-	/* x, y, z 轴加速度 */
+	/* x, y, z axis acceleration */
 	acc_x = (LIS2DH12_FROM_FS_2g_HR_TO_mg(*(int16_t*)data));
 	acc_y = (LIS2DH12_FROM_FS_2g_HR_TO_mg(*(int16_t*)(data+2)));
 	acc_z = (LIS2DH12_FROM_FS_2g_HR_TO_mg(*(int16_t*)(data+4)));
@@ -579,7 +579,7 @@ int drv_lis2dh12_get_angle( float *get)
 
 	
 
-	/* 重力加速度 */
+	/* acceleration of gravity */
 	acc_g = sqrt(pow(acc_x, 2) + pow(acc_y, 2) + pow(acc_z, 2));
 	//printf("acc_g:%f\r\n",acc_g);
 	
@@ -620,9 +620,7 @@ void OLED_WR_Byte(uint8_t dat,uint8_t cmd)
 
 
 #if OLED_MODE==1
-//向SSD1106写入一个字节。
-//dat:要写入的数据/命令
-//cmd:数据/命令标志 0,表示命令;1,表示数据;
+
 void OLED_WR_Byte(uint8_t dat,uint8_t cmd)
 {
     DATAOUT(dat);
@@ -637,9 +635,7 @@ void OLED_WR_Byte(uint8_t dat,uint8_t cmd)
     OLED_DC_Set();
 }
 #else
-//向SSD1106写入一个字节。
-//dat:要写入的数据/命令
-//cmd:数据/命令标志 0,表示命令;1,表示数据;
+
 void OLED_WR_Byte(uint8_t dat,uint8_t cmd)
 {
     uint8_t i;
@@ -669,43 +665,37 @@ void OLED_Set_Pos(unsigned char x, unsigned char y)
     OLED_WR_Byte(((x&0xf0)>>4)|0x10,OLED_CMD);
     OLED_WR_Byte((x&0x0f)|0x01,OLED_CMD);
 }
-//开启OLED显示
+//Turn on the OLED display
 void OLED_Display_On(void)
 {
-    OLED_WR_Byte(0X8D,OLED_CMD);  //SET DCDC命令
+    OLED_WR_Byte(0X8D,OLED_CMD);  //SET DCDC
     OLED_WR_Byte(0X14,OLED_CMD);  //DCDC ON
     OLED_WR_Byte(0XAF,OLED_CMD);  //DISPLAY ON
 }
-//关闭OLED显示
+//Turn off the OLED display
 void OLED_Display_Off(void)
 {
-    OLED_WR_Byte(0X8D,OLED_CMD);  //SET DCDC命令
+    OLED_WR_Byte(0X8D,OLED_CMD);  //SET DCDC
     OLED_WR_Byte(0X10,OLED_CMD);  //DCDC OFF
     OLED_WR_Byte(0XAE,OLED_CMD);  //DISPLAY OFF
 }
-//清屏函数,清完屏,整个屏幕是黑色的!和没点亮一样!!!
+//Screen clearing function
 void OLED_Clear(void)
 {
     uint8_t i,n;
     for(i=0; i<8; i++)
     {
-        OLED_WR_Byte (0xb0+i,OLED_CMD);    //设置页地址（0~7）
-        OLED_WR_Byte (0x00,OLED_CMD);      //设置显示位置—列低地址
-        OLED_WR_Byte (0x10,OLED_CMD);      //设置显示位置—列高地址
+        OLED_WR_Byte (0xb0+i,OLED_CMD);    //Setting page address (0~7)
+        OLED_WR_Byte (0x00,OLED_CMD);      //Set display position—column low address
+        OLED_WR_Byte (0x10,OLED_CMD);      //Set display position—column height address
         for(n=0; n<128; n++)OLED_WR_Byte(0,OLED_DATA);
-    } //更新显示
+    }
 }
 
-
-//在指定位置显示一个字符,包括部分字符
-//x:0~127
-//y:0~63
-//mode:0,反白显示;1,正常显示
-//size:选择字体 16/12
 void OLED_ShowChar(uint8_t x,uint8_t y,uint8_t chr)
 {
     unsigned char c=0,i=0;
-    c=chr-' ';//得到偏移后的值
+    c=chr-' ';
     if(x>Max_Column-1)
     {
         x=0;
@@ -728,19 +718,14 @@ void OLED_ShowChar(uint8_t x,uint8_t y,uint8_t chr)
 
     }
 }
-//m^n函数
+//m^n
 uint32_t oled_pow(uint8_t m,uint8_t n)
 {
     uint32_t result=1;
     while(n--)result*=m;
     return result;
 }
-//显示2个数字
-//x,y :起点坐标
-//len :数字的位数
-//size:字体大小
-//mode:模式 0,填充模式;1,叠加模式
-//num:数值(0~4294967295);
+
 void OLED_ShowNum(uint8_t x,uint8_t y,uint32_t num,uint8_t len,uint8_t size)
 {
     uint8_t t,temp;
@@ -761,7 +746,7 @@ void OLED_ShowNum(uint8_t x,uint8_t y,uint32_t num,uint8_t len,uint8_t size)
         OLED_ShowChar(x+(size/2)*t,y,temp+'0');
     }
 }
-//显示一个字符号串
+//display a character string
 void OLED_ShowString(uint8_t x,uint8_t y,uint8_t *chr)
 {
     unsigned char j=0;
@@ -777,24 +762,9 @@ void OLED_ShowString(uint8_t x,uint8_t y,uint8_t *chr)
         j++;
     }
 }
-//显示汉字
-void OLED_ShowCHinese(uint8_t x,uint8_t y,uint8_t no)
-{
-    uint8_t t,adder=0;
-    OLED_Set_Pos(x,y);
-    for(t=0; t<16; t++)
-    {
-        OLED_WR_Byte(Hzk[2*no][t],OLED_DATA);
-        adder+=1;
-    }
-    OLED_Set_Pos(x,y+1);
-    for(t=0; t<16; t++)
-    {
-        OLED_WR_Byte(Hzk[2*no+1][t],OLED_DATA);
-        adder+=1;
-    }
-}
-/***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y为页的范围0～7*****************/
+
+/* Function description: Display the starting point coordinates (x, y) of BMP picture 128×64,
+    the range of x is 0~127, and the range of y is 0~7 of the page*/
 void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned char y1,unsigned char BMP[])
 {
     unsigned int j=0;
@@ -813,18 +783,18 @@ void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned 
 }
 
 
-//初始化SSD1306
+//initialize SSD1306
 void OLED_Init(void)
 {
 #ifdef STM32F10X_HD
 //STM32F103RC SPI OLED
     GPIO_InitTypeDef  GPIO_InitStructure;
 
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);    //使能A端口时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);    //Enable A port clock
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;         //推挽输出
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
-    GPIO_Init(GPIOB, &GPIO_InitStructure);    //初始化GPIOD3,6
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;         //push-pull output
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//Speed 50MHz
+    GPIO_Init(GPIOB, &GPIO_InitStructure);    //Initialize GPIO 3,6
     GPIO_SetBits(GPIOB,GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15);
 
     OLED_RST_Set();
@@ -840,8 +810,8 @@ void OLED_Init(void)
     OLED_WR_Byte(0x40,OLED_CMD);//--set start line address  Set Mapping RAM Display Start Line (0x00~0x3F)
     OLED_WR_Byte(0x81,OLED_CMD);//--set contrast control register
     OLED_WR_Byte(0xCF,OLED_CMD); // Set SEG Output Current Brightness
-    OLED_WR_Byte(0xA1,OLED_CMD);//--Set SEG/Column Mapping     0xa0左右反置 0xa1正常
-    OLED_WR_Byte(0xC8,OLED_CMD);//Set COM/Row Scan Direction   0xc0上下反置 0xc8正常
+    OLED_WR_Byte(0xA1,OLED_CMD);//--Set SEG/Column Mapping
+    OLED_WR_Byte(0xC8,OLED_CMD);//Set COM/Row Scan Direction
     OLED_WR_Byte(0xA6,OLED_CMD);//--set normal display
     OLED_WR_Byte(0xA8,OLED_CMD);//--set multiplex ratio(1 to 64)
     OLED_WR_Byte(0x3f,OLED_CMD);//--1/64 duty

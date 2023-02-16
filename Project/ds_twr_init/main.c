@@ -5,9 +5,9 @@
 #include "deca_device_api.h"
 #include "deca_regs.h"
 #include "deca_sleep.h"
-#include "lcd.h"
+//#include "lcd.h"
 #include "port.h"
-#include "lcd_oled.h"
+//#include "lcd_oled.h"
 #include "trilateration.h"
 #include <math.h>
 #include "kalman.h"
@@ -372,7 +372,6 @@ int main(void)
     if(dwt_initialise(DWT_LOADUCODE) == -1)
     {
         printf("dwm1000 init fail!\r\n");
-        OLED_ShowString(0,0,"INIT FAIL");
         while (1)
         {
 					  //STM_EVAL_LEDOn(LED1);
@@ -394,7 +393,6 @@ int main(void)
     /* Apply default antenna delay value. */
     dwt_setrxantennadelay(RX_ANT_DLY);
     dwt_settxantennadelay(TX_ANT_DLY);
-    OLED_ShowString(0,0,"INIT PASS");
 
     printf("init pass!\r\n");
 		printf("AIT-BU01-DB V100 T2020-5-17\r\n");
@@ -443,8 +441,6 @@ if(UserSetNow.ANCHOR_TAG==1)
 	
 			    Anchor_Array_Init();
     /* Loop forever initiating ranging exchanges. */
-    OLED_ShowString(0,0,"DS TWR ANTHOR");
-    //OLED_ShowString(0,2,"Distance:");
 
     //KalMan_PramInit();
 		ANTHOR_MEASURE();
@@ -467,23 +463,12 @@ if(UserSetNow.ANCHOR_TAG==0)
 	}
 	
 	printf("device:TAG ID:%d\r\n",UserSetNow.ID);
-	if(TAG_ID == MASTER_TAG)
-    {
-        OLED_ShowString(0,0,"DS MASTER TAG:");
-    }
-    else
-    {
-        OLED_ShowString(0,0,"DS SLAVE TAG:");
-    }
 		
     /* Set expected response's delay and timeout. See NOTE 4 and 5 below.
      * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
     dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
     dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
     
-
-    //OLED_ShowString(0,2,"Distance:"); chnage by johhn
-
     if(TAG_ID ==  MASTER_TAG)
     {
         Semaphore_Enable = 1 ;
@@ -538,25 +523,6 @@ int filter(int input, int fliter_idx )
 
 static void distance_mange(void)
 {
-    // if(GetLocation(&tag_best_solution, 0, &(AnchorList[0]), &(Anthordistance[0])) != -1)
-    // {
-    // printf("Tag Location:x=%3.2fm y=%3.2fm z=%3.2fm\r\n",tag_best_solution.x,tag_best_solution.y,tag_best_solution.z);
-    // sprintf(dist_str, "x:%3.2f y:%3.2f",tag_best_solution.x,tag_best_solution.y);
-    // OLED_ShowString(0,0,dist_str);
-    //  }
-    //GetLocation2(&tag_best_solution, 0, &(AnchorList[0]), &(Anthordistance[0]));
-    //Th_Location( &(AnchorList[0]), &(Anthordistance[0]));
-    //Th_Location2( &(AnchorList[0]), &(Anthordistance[0]));
-    // OLED_ShowString(0, 2,"pass");
-
-    //printf("Count:%d %d %d \r\n",Anthordistance[0]/Anthordistance_count[0],Anthordistance[1]/Anthordistance_count[1],Anthordistance[2]/Anthordistance_count[2]);
-   // Anthordistance[0] =filter((int)(Anthordistance[0]/Anthordistance_count[0]),0);
-   // Anthordistance[1] =filter((int)(Anthordistance[1]/Anthordistance_count[1]),1);
-   // Anthordistance[2] = filter((int)(Anthordistance[2]/Anthordistance_count[2]),2);
-    //printf("Count:%d %d %d \r\n",Anthordistance_count[0],Anthordistance_count[1],Anthordistance_count[2]);
-    //printf("Count:%d %d %d \r\n",Anthordistance[0],Anthordistance[1],Anthordistance[2]);
-    //printf(" \r\n");
-
     {
         int Anchor_Index = 0;
         while(Anchor_Index < ANCHOR_MAX_NUM)
@@ -585,8 +551,6 @@ static void distance_mange(void)
     {
         sprintf(dist_str, "an0:%3.2fm", (float)Anthordistance[0]/1000);
 				//printf("%s\r\n",dist_str);
-        OLED_ShowString(0, 2," 		   ");
-        OLED_ShowString(0, 2,dist_str);
     }
 
 
@@ -594,8 +558,6 @@ static void distance_mange(void)
     {
         sprintf(dist_str, "an1:%3.2fm", (float)Anthordistance[1]/1000);
 				//printf("%s\r\n",dist_str);
-        OLED_ShowString(0, 4,"		 ");
-        OLED_ShowString(0, 4,dist_str);
     }
 
 
@@ -604,22 +566,7 @@ static void distance_mange(void)
         sprintf(dist_str, "%3.2fm", (float)Anthordistance[2]/1000);
 				//AnthordistanceBuff[0]=Anthordistance[0];
 				//printf("an2:%s\r\n",dist_str);
-			/*
-			float get=(float)Anthordistance[2]/1000;
-				if(get >0.98 && get<1.20)
-				{
-					OLED_ShowString(0, 6,"success");
-				
-				}		
-				else
-				{
-				
-					OLED_ShowString(0, 6,"fail");
-				
-				}*/
 					
-        OLED_ShowString(0, 6,"		 ");
-        OLED_ShowString(0, 6,dist_str);
     }
     // printf("Distance:%d,   %d,    %d mm\r\n",(int)((float)Anthordistance[0]/Anthordistance_count[0]),(int)((float)Anthordistance[1]/Anthordistance_count[1]),(int)((float)Anthordistance[2]/Anthordistance_count[2]));
 }

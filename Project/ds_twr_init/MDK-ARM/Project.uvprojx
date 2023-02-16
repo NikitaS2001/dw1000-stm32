@@ -15,7 +15,7 @@
         <TargetCommonOption>
           <Device>STM32F100ZE</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.4.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x8000) IROM(0x08000000,0x80000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -1536,6 +1536,16 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd_oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -2232,7 +2242,7 @@
         <TargetCommonOption>
           <Device>STM32F103ZG</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.4.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x18000) IROM(0x08000000,0x100000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -3804,6 +3814,16 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd_oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -4500,7 +4520,7 @@
         <TargetCommonOption>
           <Device>STM32F100VB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.4.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x2000) IROM(0x08000000,0x20000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -6174,6 +6194,16 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd_oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -6870,7 +6900,7 @@
         <TargetCommonOption>
           <Device>STM32F107VC</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.4.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x10000) IROM(0x08000000,0x40000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -8646,6 +8676,16 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd_oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -9343,7 +9383,7 @@
         <TargetCommonOption>
           <Device>STM32F103C8</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.4.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x5000) IROM(0x08000000,0x10000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -10915,6 +10955,16 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd_oled.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -11611,7 +11661,7 @@
         <TargetCommonOption>
           <Device>STM32F103VB</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.2.3.0</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.4.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000,0x5000) IROM(0x08000000,0x20000) CPUTYPE("Cortex-M3") CLOCK(12000000) ELITTLE</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -13335,6 +13385,16 @@
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>

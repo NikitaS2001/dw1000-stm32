@@ -3,7 +3,7 @@
 .\stm3210e-eval\stm32_eval_sdio_sd.o: ..\..\..\Utilities\STM32_EVAL\stm32_eval.h
 .\stm3210e-eval\stm32_eval_sdio_sd.o: ..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\stm32f10x.h
 .\stm3210e-eval\stm32_eval_sdio_sd.o: ..\..\..\Libraries\CMSIS\CM3\CoreSupport\core_cm3.h
-.\stm3210e-eval\stm32_eval_sdio_sd.o: F:\Programs\Keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\stm3210e-eval\stm32_eval_sdio_sd.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 .\stm3210e-eval\stm32_eval_sdio_sd.o: ..\..\..\Libraries\CMSIS\CM3\DeviceSupport\ST\STM32F10x\system_stm32f10x.h
 .\stm3210e-eval\stm32_eval_sdio_sd.o: ..\stm32f10x_conf.h
 .\stm3210e-eval\stm32_eval_sdio_sd.o: ..\..\..\Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_adc.h
