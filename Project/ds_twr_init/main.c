@@ -13,7 +13,7 @@
 #include "AT24C02.h"
 #include "stm32_eval.h"
 #include "lib.h"
-#include "mavlink.h"
+#include "mainpp.h"
 
 
 extern char dist_str[16];
@@ -355,7 +355,7 @@ int main(void)
     /* Start with board specific hardware init. */
     peripherals_init();
 	
-    printf("hello dwm1000!\r\n");
+    printf("Initializing dwm1000...\r\n");
 
     /* Reset and initialise DW1000.
      * For initialisation, DW1000 clocks must be temporarily set to crystal speed. After initialisation SPI rate can be increased for optimum
