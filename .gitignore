@@ -15,15 +15,20 @@
 *.map
 *.__i
 
-#Keil Project screen layout file
+# Keil Project screen layout file
 *.uvguix.*
 *.uvgui.*
 
-#JLINK file
+# JLINK file
 JLinkLog.txt
 
 # Temp files
 *.tmp
+
+# Project runtime
+Build/
+RTE/
+DebugConfig/
 
 # VS Code
 *.code-workspace
