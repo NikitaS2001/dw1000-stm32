@@ -1551,16 +1551,6 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -1580,16 +1570,6 @@
               <FileName>deca_range_tables.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\decadriver\deca_range_tables.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>location</GroupName>
-          <Files>
-            <File>
-              <FileName>trilateration.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\trilateration\trilateration.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -3299,16 +3279,6 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -3328,16 +3298,6 @@
               <FileName>deca_range_tables.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\decadriver\deca_range_tables.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>location</GroupName>
-          <Files>
-            <File>
-              <FileName>trilateration.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\trilateration\trilateration.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -5149,16 +5109,6 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -5178,16 +5128,6 @@
               <FileName>deca_range_tables.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\decadriver\deca_range_tables.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>location</GroupName>
-          <Files>
-            <File>
-              <FileName>trilateration.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\trilateration\trilateration.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7101,16 +7041,6 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -7130,16 +7060,6 @@
               <FileName>deca_range_tables.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\decadriver\deca_range_tables.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>location</GroupName>
-          <Files>
-            <File>
-              <FileName>trilateration.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\trilateration\trilateration.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -8850,16 +8770,6 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -8879,16 +8789,6 @@
               <FileName>deca_range_tables.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\decadriver\deca_range_tables.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>location</GroupName>
-          <Files>
-            <File>
-              <FileName>trilateration.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\trilateration\trilateration.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -10751,16 +10651,6 @@
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
             </File>
-            <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
-            </File>
           </Files>
         </Group>
         <Group>
@@ -10780,16 +10670,6 @@
               <FileName>deca_range_tables.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\decadriver\deca_range_tables.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>location</GroupName>
-          <Files>
-            <File>
-              <FileName>trilateration.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\trilateration\trilateration.c</FilePath>
             </File>
           </Files>
         </Group>

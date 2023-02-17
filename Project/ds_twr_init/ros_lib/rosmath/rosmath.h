@@ -1,5 +1,5 @@
-#ifndef _ROUND_H_
-#define _ROUND_H_
+#ifndef _ROSMATH_H_
+#define _ROSMATH_H_
 
 #include <math.h>
 

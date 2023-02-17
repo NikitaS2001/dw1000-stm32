@@ -1,20 +1,17 @@
-/* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include <stdio.h>
 #include <string.h>
 #include "deca_device_api.h"
 #include "deca_regs.h"
 #include "deca_sleep.h"
-//#include "lcd.h"
 #include "port.h"
-#include "trilateration.h"
+#include "math/vector.h"
 #include <math.h>
 #include "kalman.h"
 #include "AT24C02.h"
 #include "stm32_eval.h"
 #include "lib.h"
 #include "mainpp.h"
-
 
 extern char dist_str[16];
 extern uint8_t TAG_ID;
@@ -53,39 +50,6 @@ void dwt_dumpregisters(char *str, size_t strSize)
     int i;
     int cnt ;
 
-#if (0)
-    //first print all single registers
-    for(i=0; i<0x3F; i++)
-    {
-        dwt_readfromdevice(i, 0, 5, buff) ;
-        str += cnt = sprintf(str,"reg[%02X]=%02X%02X%02X%02X%02X",i,buff[4], buff[3], buff[2], buff[1], buff[0] ) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x20
-    for(i=0; i<=32; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x20,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x20,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x21
-    for(i=0; i<=44; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x21,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x21,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x23
-    for(i=0; i<=0x20; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x23,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x23,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-#else
     //reg 0x24
     for(i=0; i<=12; i+=4)
     {
@@ -149,7 +113,6 @@ void dwt_dumpregisters(char *str, size_t strSize)
         str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x36,i,reg) ;
         str += cnt = sprintf(str,"\n") ;
     }
-#endif
 }
 
 void Anchor_Array_Init(void)
@@ -161,6 +124,7 @@ void Anchor_Array_Init(void)
         Anthordistance_count[anchor_index] = 0;
     }
 }
+
 void Semaphore_Init(void)
 {
     int tag_index = 0 ;
@@ -186,11 +150,13 @@ void Tag_Measure_Dis(void)
 {
     uint8 dest_anthor = 0,frame_len = 0;
     float final_distance = 0;
-	frame_seq_nb=0;
+    frame_seq_nb=0;
+
     for(dest_anthor = 0 ;  dest_anthor<ANCHOR_MAX_NUM; dest_anthor++)
     {
         dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
         dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
+    
         /* Write frame data to DW1000 and prepare transmission. */
         tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
         tx_poll_msg[ALL_MSG_TAG_IDX] = TAG_ID;
@@ -208,13 +174,14 @@ void Tag_Measure_Dis(void)
         /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. */
         while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
         {
-									if((portGetTickCount() - tick1) > 350)
-									{
-										break;
-									}
+            if((portGetTickCount() - tick1) > 350)
+            {
+                break;
+            }
 
-				};
-        GPIO_SetBits(GPIOA,GPIO_Pin_1);
+        };
+
+        GPIO_SetBits(GPIOA, GPIO_Pin_1);
 
         if (status_reg & SYS_STATUS_RXFCG)
         {
@@ -228,8 +195,11 @@ void Tag_Measure_Dis(void)
                 dwt_readrxdata(rx_buffer, frame_len, 0);
             }
 
-            if(rx_buffer[ALL_MSG_TAG_IDX] != TAG_ID)//���TAG_ID
+            if(rx_buffer[ALL_MSG_TAG_IDX] != TAG_ID)
+            {
                 continue;
+            }
+
             rx_buffer[ALL_MSG_TAG_IDX] = 0;
 
             /* As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
@@ -268,12 +238,11 @@ void Tag_Measure_Dis(void)
 
                 while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
                 { 
-										if((portGetTickCount() - tick1) > 500)
-									{
-										break;
-									}
-								
-								};
+                    if((portGetTickCount() - tick1) > 500)
+                    {
+                        break;
+                    }
+                }
 
                 /* Increment frame sequence number after transmission of the poll message (modulo 256). */
                 if (status_reg & SYS_STATUS_RXFCG)
@@ -296,7 +265,7 @@ void Tag_Measure_Dis(void)
 
                     if (memcmp(rx_buffer, distance_msg, ALL_MSG_COMMON_LEN) == 0)
                     {
-                       // final_distance = rx_buffer[10] + (float)rx_buffer[11]/100;
+                        // final_distance = rx_buffer[10] + (float)rx_buffer[11]/100;
                         Anthordistance[rx_buffer[12]] +=(rx_buffer[10]*1000 + rx_buffer[11]*10);
                         Anthordistance_count[rx_buffer[12]] ++;
                         {
@@ -307,16 +276,17 @@ void Tag_Measure_Dis(void)
                                 {
                                     distance_mange();
                                     Anchor_Index = 0;
-									//clear all
+
+                                    //clear all
                                     while(Anchor_Index < ANCHOR_MAX_NUM)
                                     {
                                         Anthordistance_count[Anchor_Index] = 0;
                                         Anthordistance[Anchor_Index] = 0;
-										Anchor_Index++;
+                                        Anchor_Index++;
                                     }
                                     break;
                                 }
-								Anchor_Index++;
+                                Anchor_Index++;
                             }
                         }
                     }
@@ -351,20 +321,20 @@ int main(void)
     uint8 Semaphore_Enable = 0 ;
     uint8 Waiting_TAG_Release_Semaphore = 0;
     int8 frame_len = 0;
-		//lable1:
+
     /* Start with board specific hardware init. */
     peripherals_init();
-	
+
     printf("Initializing dwm1000...\r\n");
 
     /* Reset and initialise DW1000.
      * For initialisation, DW1000 clocks must be temporarily set to crystal speed. After initialisation SPI rate can be increased for optimum
      * performance. */
 
-	reset_DW1000(); /* Target specific drive of RSTn line into DW1000 low for a period. */
+    reset_DW1000(); /* Target specific drive of RSTn line into DW1000 low for a period. */
     spi_set_rate_low();
 
-		
+
     if(dwt_initialise(DWT_LOADUCODE) == -1)
     {
         printf("dwm1000 init fail!\r\n");
@@ -376,24 +346,21 @@ int main(void)
             //STM_EVAL_LEDOff(LED1);
             GPIO_ResetBits(GPIOC,GPIO_Pin_13);
             deca_sleep(1000);
-					
- 
         }
     }
+
     spi_set_rate_high();
 
     /* Configure DW1000. */
     dwt_configure(&config);
     dwt_setleds(1);
-		
+
     /* Apply default antenna delay value. */
     dwt_setrxantennadelay(RX_ANT_DLY);
     dwt_settxantennadelay(TX_ANT_DLY);
 
     printf("init pass!\r\n");
-		printf("AIT-BU01-DB V100 T2020-5-17\r\n");
-		
-		
+
     AnchorList[0].x =0.12;
     AnchorList[0].y =0.34;
     AnchorList[0].z =0;
@@ -407,83 +374,69 @@ int main(void)
     AnchorList[2].z =0;
     int rx_ant_delay =32880;
     int index = 0 ;
-		
-	extern UserSet UserSetNow;
-	uint16_t buff[3]={1,0,0xff};
-	FLASH_ReadMoreData(USER_FLASH_BASE,buff,3);
-	if(buff[0]==1)
-	{
-		UserSetNow.ANCHOR_TAG=1;
-	}
-	else if(buff[0]==0)
-	{
-		UserSetNow.ANCHOR_TAG=0;
-	}
-	else
-	{
-		UserSetNow.ANCHOR_TAG=1;
-	}
-	
-//#ifdef ANTHOR
-	
-if(UserSetNow.ANCHOR_TAG==1)
-{
-	if(buff[1]>=0 && buff[1]<=255)
-	{
-		UserSetNow.ID=buff[1];
-		ANCHOR_IND=UserSetNow.ID;
-	}
-	printf("device:anchor ID:%d\r\n",ANCHOR_IND);
-	
-			    Anchor_Array_Init();
-    /* Loop forever initiating ranging exchanges. */
 
-    //KalMan_PramInit();
-		ANTHOR_MEASURE();
-
-	
-}
-
-//#endif
-
-//#ifdef TAG
-
-if(UserSetNow.ANCHOR_TAG==0)
-{
-	
-	if(buff[1]>=0 && buff[1]<=255)
-	{
-		UserSetNow.ID=buff[1];
-		TAG_ID=UserSetNow.ID;
-		MASTER_TAG=TAG_ID;
-	}
-	
-	printf("device:TAG ID:%d\r\n",UserSetNow.ID);
-		
-    /* Set expected response's delay and timeout.
-     * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
-    dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
-    dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
-    
-    if(TAG_ID ==  MASTER_TAG)
+    extern UserSet UserSetNow;
+    uint16_t buff[3]={1,0,0xff};
+    FLASH_ReadMoreData(USER_FLASH_BASE,buff,3);
+    if(buff[0]==1)
     {
-        Semaphore_Enable = 1 ;
-        Semaphore_Init();
-        Waiting_TAG_Release_Semaphore = 0;
+        UserSetNow.ANCHOR_TAG=1;
+    }
+    else if(buff[0]==0)
+    {
+        UserSetNow.ANCHOR_TAG=0;
     }
     else
     {
-        Semaphore_Enable = 0 ;
+        UserSetNow.ANCHOR_TAG=1;
     }
-    //Master TAG0
-			
-		TAG_MEASURE();
-  
 
+    if(UserSetNow.ANCHOR_TAG==1)
+    {
+        if(buff[1]>=0 && buff[1]<=255)
+        {
+            UserSetNow.ID=buff[1];
+            ANCHOR_IND=UserSetNow.ID;
+        }
+        printf("device:anchor ID:%d\r\n",ANCHOR_IND);
 
-}
-		
-//#endif
+        Anchor_Array_Init();
+        /* Loop forever initiating ranging exchanges. */
+
+        //KalMan_PramInit();
+        ANTHOR_MEASURE();
+    }
+
+    if(UserSetNow.ANCHOR_TAG==0)
+    {
+        if(buff[1]>=0 && buff[1]<=255)
+        {
+            UserSetNow.ID=buff[1];
+            TAG_ID=UserSetNow.ID;
+            MASTER_TAG=TAG_ID;
+        }
+
+        printf("device:TAG ID:%d\r\n",UserSetNow.ID);
+
+        /* Set expected response's delay and timeout.
+        * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
+        dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
+        dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
+        
+        if(TAG_ID ==  MASTER_TAG)
+        {
+            Semaphore_Enable = 1 ;
+            Semaphore_Init();
+            Waiting_TAG_Release_Semaphore = 0;
+        }
+        else
+        {
+            Semaphore_Enable = 0 ;
+        }
+
+        //Master TAG0
+        TAG_MEASURE();
+    }
 }
 
 #define Filter_N 5  //max filter use in this system
@@ -527,49 +480,43 @@ static void distance_mange(void)
             {
                 Anthordistance[Anchor_Index] =filter((int)(Anthordistance[Anchor_Index]/Anthordistance_count[Anchor_Index]),Anchor_Index);
             }
-			Anchor_Index++;
+            Anchor_Index++;
         }
     }
 
     compute_angle_send_to_anthor0(Anthordistance[0], Anthordistance[1],Anthordistance[2]);
 
-		
-		for(int j=0;j<ANCHOR_MAX_NUM;j++)
-		{
-			if(Anthordistance_count[j]>0)
-			{
-				 sprintf(dist_str, "an%d:%3.2fm",j,(float)Anthordistance[j]/1000);
-					printf("%s\r\n",dist_str);
-			}
-		
-		}
+
+    for(int j=0;j<ANCHOR_MAX_NUM;j++)
+    {
+        if(Anthordistance_count[j]>0)
+        {
+            sprintf(dist_str, "an%d:%3.2fm",j,(float)Anthordistance[j]/1000);
+            printf("%s\r\n",dist_str);
+        }
+    }
+
     if(Anthordistance_count[0]>0)
     {
         sprintf(dist_str, "an0:%3.2fm", (float)Anthordistance[0]/1000);
-				//printf("%s\r\n",dist_str);
+        //printf("%s\r\n",dist_str);
     }
-
 
     if(Anthordistance_count[1]>0)
     {
         sprintf(dist_str, "an1:%3.2fm", (float)Anthordistance[1]/1000);
-				//printf("%s\r\n",dist_str);
+        //printf("%s\r\n",dist_str);
     }
-
 
     if(Anthordistance_count[2]>0)
     {
         sprintf(dist_str, "%3.2fm", (float)Anthordistance[2]/1000);
-				//AnthordistanceBuff[0]=Anthordistance[0];
-				//printf("an2:%s\r\n",dist_str);
-					
+        //AnthordistanceBuff[0]=Anthordistance[0];
+        //printf("an2:%s\r\n",dist_str);
     }
+
     // printf("Distance:%d,   %d,    %d mm\r\n",(int)((float)Anthordistance[0]/Anthordistance_count[0]),(int)((float)Anthordistance[1]/Anthordistance_count[1]),(int)((float)Anthordistance[2]/Anthordistance_count[2]));
 }
-
-
-
-
 
 #define DISTANCE3 0.27
 
@@ -582,49 +529,6 @@ static void compute_angle_send_to_anthor0(int distance1, int distance2,int dista
 {
     static int framenum = 0 ;
 
-#if 0 //compute angle for smartcar
-    float dis3_constans = DISTANCE3;
-    float cos = 0;
-    float angle = 0 ;
-    float dis1 = (float)distance1/1000; //m
-    float dis2 = (float)distance2/1000;  //m
-
-    if(dis1 + dis3_constans < dis2 || dis2+dis3_constans < dis1)
-    {
-        //printf("ERROR!\r\n");
-        //return;
-    }
-    cos = (dis1*dis1 + dis3_constans* dis3_constans - dis2*dis2)/(2*dis1*dis3_constans);
-    angle  = acos(cos)*180/3.1415926;
-    printf("cos = %f, arccos = %f\r\n",cos,angle);
-    sprintf(dist_str, "angle: %3.2f m", angle);
-
-    if(dis1 > 1)
-    {
-        if(angle > 110)
-        {
-            printf("turn right\r\n");
-            angle_msg[10] = 'R';
-        }
-        else if(angle < 75)
-        {
-            printf("turn left\r\n");
-            angle_msg[10] = 'L';
-        }
-        else
-        {
-            printf("forward\r\n");
-            angle_msg[10] = 'F';
-        }
-    }
-    else
-    {
-        printf("stay here\r\n");
-        angle_msg[10] = 'S';
-    }
-    angle_msg[LOCATION_FLAG_IDX] = 0;
-
-#else
     //location
     {
         uint8 len = 0;
@@ -661,7 +565,7 @@ static void compute_angle_send_to_anthor0(int distance1, int distance2,int dista
         //USART_puts((char*)dist_str,16);
 
     }
-#endif
+
     //only anthor0 recive angle message
     angle_msg[ALL_MSG_SN_IDX] = framenum;
     angle_msg[ALL_MSG_TAG_IDX] = TAG_ID;
@@ -672,11 +576,11 @@ static void compute_angle_send_to_anthor0(int distance1, int distance2,int dista
     /* Start transmission, indicating that a response is expected so that reception is enabled automatically after the frame is sent and the delay
      * set by dwt_setrxaftertxdelay() has elapsed. */
     dwt_starttx(DWT_START_TX_IMMEDIATE );
+
     while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS))
     { };
 
     framenum++;
-
 }
 
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
@@ -689,23 +593,8 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
     }
 }
 
-// #ifdef  USE_FULL_ASSERT
-
-// void assert_failed(uint8_t* file, uint32_t line)
-// {
-//     /* User can add his own implementation to report the file name and line number,
-//        ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-//     /* Infinite loop */
-//     while (1)
-//     {
-//     }
-// }
-// #endif
-
 PUTCHAR_PROTOTYPE
 {
-
     USART_ClearFlag(EVAL_COM1,USART_FLAG_TC);
     /* e.g. write a character to the USART */
     USART_SendData(EVAL_COM1, (uint8_t) ch);

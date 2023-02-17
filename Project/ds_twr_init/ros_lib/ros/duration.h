@@ -35,8 +35,7 @@
 #ifndef _ROS_DURATION_H_
 #define _ROS_DURATION_H_
 
-#include <math.h>
-#include "round.h"
+#include "rosmath/rosmath.h"
 
 namespace ros {
 

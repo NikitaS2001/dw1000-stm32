@@ -22,3 +22,7 @@ JLinkLog.txt
 
 # Temp files
 *.tmp
+
+# VS Code
+*.code-workspace
+*.vscode

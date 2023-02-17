@@ -11,9 +11,7 @@
  * @author DecaWave
  */
 #include "deca_sleep.h"
-//#include "lcd.h"
 #include "port.h"
-#include "lcd_oled.h"
 
 #define rcc_init(x)                 RCC_Configuration(x)
 #define systick_init(x)             SysTick_Configuration(x)
@@ -25,14 +23,12 @@
 #define ethernet_init(x)            No_Configuration(x)
 #define fs_init(x)                  No_Configuration(x)
 #define usb_init(x)                 No_Configuration(x)
-#define lcd_init(x)                 LCD_Configuration(x)
 #define touch_screen_init(x)        No_Configuration(x)
 
 /* System tick 32 bit variable defined by the platform */
 extern __IO unsigned long time32_incr;
 
 /* Internal functions prototypes. */
-//static void LCD_Configuration(void);
 static void spi_peripheral_init(void);
 
 int No_Configuration(void)
@@ -183,120 +179,8 @@ ITStatus EXTI_GetITEnStatus(uint32_t EXTI_Line)
     return bitstatus;
 }
 
-// int RCC_Configuration(void)
-// {
-//  ErrorStatus HSEStartUpStatus;
-//  RCC_ClocksTypeDef RCC_ClockFreq;
-
-//  /* RCC system reset(for debug purpose) */
-//  RCC_DeInit();
-
-//  /* Enable HSE */
-//  RCC_HSEConfig(RCC_HSE_ON);
-
-//  /* Wait till HSE is ready */
-//  HSEStartUpStatus = RCC_WaitForHSEStartUp();
-
-//  if(HSEStartUpStatus != ERROR)
-//  {
-//      /* Enable Prefetch Buffer */
-//      FLASH_PrefetchBufferCmd(FLASH_PrefetchBuffer_Enable);
-
-//      /****************************************************************/
-//      /* HSE= up to 25MHz (on EVB1000 is 12MHz),
-//       * HCLK=72MHz, PCLK2=72MHz, PCLK1=36MHz                         */
-//      /****************************************************************/
-//      /* Flash 2 wait state */
-//      FLASH_SetLatency(FLASH_Latency_2);
-//      /* HCLK = SYSCLK */
-//      RCC_HCLKConfig(RCC_SYSCLK_Div1);
-//      /* PCLK2 = HCLK */
-//      RCC_PCLK2Config(RCC_HCLK_Div1);
-//      /* PCLK1 = HCLK/2 */
-//      RCC_PCLK1Config(RCC_HCLK_Div2);
-//      /*  ADCCLK = PCLK2/4 */
-//      RCC_ADCCLKConfig(RCC_PCLK2_Div6);
-
-//      /* Configure PLLs *********************************************************/
-//      /* PLL2 configuration: PLL2CLK = (HSE / 4) * 8 = 24 MHz */
-//      RCC_PREDIV2Config(RCC_PREDIV2_Div4);
-//      RCC_PLL2Config(RCC_PLL2Mul_8);
-
-//      /* Enable PLL2 */
-//      RCC_PLL2Cmd(ENABLE);
-
-//      /* Wait till PLL2 is ready */
-//      while (RCC_GetFlagStatus(RCC_FLAG_PLL2RDY) == RESET){}
-
-//      /* PLL1 configuration: PLLCLK = (PLL2 / 3) * 9 = 72 MHz */
-//      RCC_PREDIV1Config(RCC_PREDIV1_Source_PLL2, RCC_PREDIV1_Div3);
-
-//      RCC_PLLConfig(RCC_PLLSource_PREDIV1, RCC_PLLMul_9);
-
-//      /* Enable PLL */
-//      RCC_PLLCmd(ENABLE);
-
-//      /* Wait till PLL is ready */
-//      while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET){}
-
-//      /* Select PLL as system clock source */
-//      RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-
-//      /* Wait till PLL is used as system clock source */
-//      while (RCC_GetSYSCLKSource() != 0x08){}
-//  }
-
-//  RCC_GetClocksFreq(&RCC_ClockFreq);
-
-//  /* Enable SPI1 clock */
-//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
-
-//  /* Enable SPI2 clock */
-//  RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
-
-//  /* Enable GPIOs clocks */
-//  RCC_APB2PeriphClockCmd(
-//                      RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
-//                      RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD |
-//                      RCC_APB2Periph_GPIOE | RCC_APB2Periph_AFIO,
-//                      ENABLE);
-
-//  return 0;
-// }
-
 int USART_Configuration(void)
 {
-#if 0
-    USART_InitTypeDef USART_InitStructure;
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-    // USARTx setup
-    USART_InitStructure.USART_BaudRate = 115200;
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-    USART_InitStructure.USART_StopBits = USART_StopBits_1;
-    USART_InitStructure.USART_Parity = USART_Parity_No;
-    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-
-    USART_Init(USARTx, &USART_InitStructure);
-
-    // USARTx TX pin setup
-    GPIO_InitStructure.GPIO_Pin = USARTx_TX;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
-    GPIO_Init(USARTx_GPIO, &GPIO_InitStructure);
-
-    // USARTx RX pin setup
-    GPIO_InitStructure.GPIO_Pin = USARTx_RX;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
-    GPIO_Init(USARTx_GPIO, &GPIO_InitStructure);
-
-    // Enable USARTx
-    USART_Cmd(USARTx, ENABLE);
-#endif
     return 0;
 }
 
@@ -483,20 +367,6 @@ int SPI2_Configuration(void)
     // Set CS high
     GPIO_SetBits(SPIy_CS_GPIO, SPIy_CS);
 
-    // LCD_RS pin setup
-    GPIO_InitStructure.GPIO_Pin = LCD_RS;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
-    GPIO_Init(SPIy_GPIO, &GPIO_InitStructure);
-
-    // LCD_RW pin setup
-    GPIO_InitStructure.GPIO_Pin = LCD_RW;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-
-    GPIO_Init(SPIy_GPIO, &GPIO_InitStructure);
-
     return 0;
 }
 
@@ -544,10 +414,10 @@ int GPIO_Configuration(void)
     GPIO_Init(TA_SW1_GPIOA, &GPIO_InitStructure);
 
 
-	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_1|GPIO_Pin_2;              //INX
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;        //ÍÆÍìÊä³ö
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;       //IO¿ÚËÙ¶ÈÎª50MHz
-    GPIO_Init(GPIOA, &GPIO_InitStructure);                  //¸ù¾İÉè¶¨²ÎÊı³õÊ¼»¯GPIOB.5
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_1|GPIO_Pin_2;              //INX
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;       //IOï¿½ï¿½ï¿½Ù¶ï¿½Îª50MHz
+    GPIO_Init(GPIOA, &GPIO_InitStructure);                  //ï¿½ï¿½ï¿½ï¿½ï¿½è¶¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½GPIOB.5
     // Disable GPIOs clocks
     //RCC_APB2PeriphClockCmd(
     //                  RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
@@ -562,7 +432,7 @@ int GPIO_Configuration(void)
     GPIO_Init(GPIOC, &GPIO_InitStructure);
 
     GPIO_PinRemapConfig(GPIO_Remap_SPI1, DISABLE);
-		GPIO_SetBits(GPIOC,GPIO_Pin_13);//change by johhn
+GPIO_SetBits(GPIOC,GPIO_Pin_13);//change by johhn
     return 0;
 }
 
@@ -642,91 +512,8 @@ void setup_DW1000RSTnIRQ(int enable)
     }
 }
 
-
 int ETH_GPIOConfigure(void)
 {
-#if 0
-    GPIO_InitTypeDef GPIO_InitStructure;
-
-    /* ETHERNET pins configuration */
-    /* AF Output Push Pull:
-    - ETH_MII_MDIO / ETH_RMII_MDIO: PA2
-    - ETH_MII_MDC / ETH_RMII_MDC: PC1
-    - ETH_MII_TXD2: PC2
-    - ETH_MII_TX_EN / ETH_RMII_TX_EN: PB11
-    - ETH_MII_TXD0 / ETH_RMII_TXD0: PB12
-    - ETH_MII_TXD1 / ETH_RMII_TXD1: PB13
-    - ETH_MII_PPS_OUT / ETH_RMII_PPS_OUT: PB5
-    - ETH_MII_TXD3: PB8 */
-
-    /* Configure PA2 as alternate function push-pull */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    /* Configure PC1 and PC2 as alternate function push-pull */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 | GPIO_Pin_2;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-    /* Configure PB5, PB8, PB11, PB12 and PB13 as alternate function push-pull */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_8 | GPIO_Pin_11 |
-                                  GPIO_Pin_12 | GPIO_Pin_13;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-    /**************************************************************/
-    /*               For Remapped Ethernet pins                   */
-    /*************************************************************/
-    /* Input (Reset Value):
-    - ETH_MII_CRS CRS: PA0
-    - ETH_MII_RX_CLK / ETH_RMII_REF_CLK: PA1
-    - ETH_MII_COL: PA3
-    - ETH_MII_RX_DV / ETH_RMII_CRS_DV: PD8
-    - ETH_MII_TX_CLK: PC3
-    - ETH_MII_RXD0 / ETH_RMII_RXD0: PD9
-    - ETH_MII_RXD1 / ETH_RMII_RXD1: PD10
-    - ETH_MII_RXD2: PD11
-    - ETH_MII_RXD3: PD12
-    - ETH_MII_RX_ER: PB10 */
-
-    /* Configure PA0, PA1 and PA3 as input */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_3;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    /* Configure PB10 as input */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-    /* Configure PC3 as input */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-    /* Configure PD8, PD9, PD10, PD11 and PD12 as input */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOD, &GPIO_InitStructure); /**/
-
-
-
-    /* MCO pin configuration------------------------------------------------- */
-    /* Configure MCO (PA8) as alternate function push-pull */
-    //GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-    //GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    //GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    //GPIO_Init(GPIOA, &GPIO_InitStructure);
-#endif
-
     return 0;
 }
 
@@ -820,7 +607,7 @@ void led_on (led_t led)
 #include "stm32_eval.h"
 void usartinit(void)
 {
-	
+
     USART_InitTypeDef USART_InitStructure;
     //GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -840,10 +627,8 @@ void usartinit(void)
    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
    STM_EVAL_COMInit(COM1, &USART_InitStructure);
-	
+
 }
-
-
 
 void USART_puts(uint8_t *s,uint8_t len)
 {
@@ -854,57 +639,11 @@ void USART_puts(uint8_t *s,uint8_t len)
     }
 }
 
-/**
-  * @brief  Retargets the C library printf function to the USART.
-  * @param  None
-  * @retval None
-  */
-
-
-
-/*
-void USART_puts(const char *s)
-{
-    int i;
-    for(i=0; s[i]!=0; i++)
-    {
-        USART_putc(s[i]);
-    }
-}*/
-
-
-
-
 int is_IRQ_enabled(void)
 {
     return ((   NVIC->ISER[((uint32_t)(DECAIRQ_EXTI_IRQn) >> 5)]
                 & (uint32_t)0x01 << (DECAIRQ_EXTI_IRQn & (uint8_t)0x1F)  ) ? 1 : 0) ;
 }
-
-/*! ------------------------------------------------------------------------------------------------------------------
- * @fn LCD_configuration()
- *
- * @brief Initialise LCD screen.
- *
- * @param none
- *
- * @return none
-
-static void LCD_Configuration(void)
-{
-    unsigned char initseq[9] = { 0x39, 0x14, 0x55, 0x6D, 0x78, 0x38, 0x0C, 0x01, 0x06 };
-    unsigned char command = 0x0;
-
-    // Write initialisation sequence.
-    writetoLCD(9, 0, initseq);
-    deca_sleep(10);
-
-    // Return cursor home and clear screen.
-    command = 0x2;
-    writetoLCD(1, 0, &command);
-    command = 0x1;
-    writetoLCD(1, 0, &command);
-} */
 
 /*! ------------------------------------------------------------------------------------------------------------------
  * @fn spi_peripheral_init()
@@ -918,16 +657,6 @@ static void LCD_Configuration(void)
 static void spi_peripheral_init(void)
 {
     spi_init();//for dwm1000
-
-    // Initialise SPI2 peripheral for LCD control
-	/*
-    SPI2_Configuration();
-    port_LCD_RS_clear();
-    port_LCD_RW_clear();
-	*/
-
-    // Wait for LCD to power on.
-    deca_sleep(100);
 }
 
 /* Private variables ---------------------------------------------------------*/
@@ -951,11 +680,11 @@ static void MX_I2C1_Init(void)
     I2C_InitStructure.I2C_OwnAddress1 = 0x30;
     I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
     I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
-    I2C_InitStructure.I2C_ClockSpeed = 400000;  /* 100KËÙ¶È */
+    I2C_InitStructure.I2C_ClockSpeed = 400000;
 
     I2C_Cmd(I2C1, ENABLE);
     I2C_Init(I2C1, &I2C_InitStructure);
-    /*ÔÊĞí1×Ö½Ú1Ó¦´ğÄ£Ê½*/
+
     I2C_AcknowledgeConfig(I2C1, ENABLE);
 }
 
@@ -983,24 +712,17 @@ void peripherals_init (void)
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
 
     //rcc_init();
-	
+
     gpio_init();
     systick_init();
     spi_peripheral_init();
-	
-		 usartinit();
-    //lcd_init();
+
+    usartinit();
 #ifdef STM32F10X_MD
     MX_I2C1_Init();
 #endif
-		drv_lis2dh12_init();
-		SHT20_init();
-    OLED_Init();            //³õÊ¼»¯OLED
-
-    OLED_Clear()    ;
-	
-   
-		
+    drv_lis2dh12_init();
+    SHT20_init();
 }
 
 

@@ -1402,19 +1402,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -2876,19 +2866,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -4430,19 +4410,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -6064,19 +6034,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -7538,19 +7498,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -9132,19 +9082,9 @@
               <FilePath>..\platform\deca_spi.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\platform\port.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd_oled.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\platform\lcd_oled.c</FilePath>
             </File>
           </Files>
         </Group>

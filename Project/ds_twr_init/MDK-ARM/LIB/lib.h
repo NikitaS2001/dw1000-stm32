@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x.h"
 #include <stdio.h>
@@ -11,15 +12,11 @@ extern "C" {
 #include "deca_device_api.h"
 #include "deca_regs.h"
 #include "deca_sleep.h"
-#include "lcd.h"
 #include "port.h"
-#include "lcd_oled.h"
-#include "trilateration.h"
 #include <math.h>
 #include "kalman.h"
 #include "AT24C02.h"
 #include "stm32_eval.h"
-	
 
 /* Default communication configuration. */
 static dwt_config_t config =
@@ -36,17 +33,15 @@ static dwt_config_t config =
     (1025 + 64 - 32) /* SFD timeout (preamble length + 1 + SFD length - PAC size). Used in RX only. */
 };
 
-
-
 /* Example application name and version to display on LCD screen. TAG DELAY */
 #define RNG_DELAY_MS 5
-	
+
 /* Default antenna delay values for 64 MHz PRF. */
 //#define TX_ANT_DLY 16436
 //#define RX_ANT_DLY 16436
 #define TX_ANT_DLY 0
 #define RX_ANT_DLY 32950
-	
+
 /* Frames used in the ranging process. See NOTE 2 below. */
 static uint8 rx_poll_msg[] =  {0x41, 0x88, 0, 0x0, 0xDE, 'W', 'A', 'V', 'E', 0x21, 0, 0};
 static uint8 tx_resp_msg[] =  {0x41, 0x88, 0, 0x0, 0xDE, 'V', 'E', 'W', 'A', 0x10, 0x02, 0, 0, 0, 0};
@@ -61,9 +56,8 @@ static uint8 Tag_Statistics[] =                      {0x41, 0x88, 0, 0x0, 0xDE, 
 static uint8 Master_Release_Semaphore[] =            {0x41, 0x88, 0, 0x0, 0xDE, 'W', 'A', 'V', 'E', 0xE2, 0, 0, 0};
 static uint8 Tag_Statistics_response[] =             {0x41, 0x88, 0, 0x0, 0xDE, 'W', 'A', 'V', 'E', 0xE3, 0, 0, 0};
 static uint8 Master_Release_Semaphore_comfirm[] =    {0x41, 0x88, 0, 0x0, 0xDE, 'W', 'A', 'V', 'E', 0xE4, 0, 0, 0};
-	
-	
-	
+
+
 /* Length of the common part of the message (up to and including the function code). */
 #define ALL_MSG_COMMON_LEN 10
 /* Index to access some of the fields in the frames involved in the process. */
@@ -78,8 +72,6 @@ static uint8 Master_Release_Semaphore_comfirm[] =    {0x41, 0x88, 0, 0x0, 0xDE, 
 #define LOCATION_INFO_LEN_IDX 12
 #define LOCATION_INFO_START_IDX 13
 #define ANGLE_MSG_MAX_LEN 30
-	
-	
 
 /* Frame sequence number, incremented after each transmission. */
 static uint8 frame_seq_nb = 0;
@@ -116,7 +108,6 @@ static uint32 status_reg = 0;
 /* Receive response timeout. */
 #define RESP_RX_TIMEOUT_UUS 2700
 
-
 /* Timestamps of frames transmission/reception.
  * As they are 40-bit wide, we need to define a 64-bit int type to handle them. */
 typedef signed long long int64;
@@ -129,13 +120,10 @@ static uint64 poll_tx_ts;
 static uint64 resp_rx_ts;
 static uint64 final_tx_ts;
 
-
-
 /* Speed of light in air, in metres per second. */
 #ifndef SPEED_OF_LIGHT
 #define SPEED_OF_LIGHT 299702547
 #endif
-
 
 /* Hold copies of computed time of flight and distance here for reference, so reader can examine it at a breakpoint. */
 static double tof;
@@ -153,7 +141,6 @@ static void distance_mange(void);
 void USART_puts(uint8_t *s,uint8_t len);
 
 
-
 //#define TAG
 //uint8_t TAG_ID=0x01;
 //uint8_t MASTER_TAG=0x01;
@@ -169,9 +156,9 @@ void USART_puts(uint8_t *s,uint8_t len);
 //#define ANCHOR_IND ANCHOR_NUM
 
 
-extern uint8 SWITCH_DIS;	
-	
-	
+extern uint8 SWITCH_DIS;
+
+
 void TAG_MEASURE(void);
 
 void ANTHOR_MEASURE(void);
