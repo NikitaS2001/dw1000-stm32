@@ -1,7 +1,6 @@
 #ifndef _KALMAN_H
 #define _KALMAN_H
 
-
 #define   LENGTH      1*1
 #define   ORDER       1
 #define   N           100
@@ -15,7 +14,6 @@ typedef struct  _tOptimal
 
 extern void   KalMan_PramInit(void);
 extern float KalMan_Update(double *Z);
-
 
 #endif
 

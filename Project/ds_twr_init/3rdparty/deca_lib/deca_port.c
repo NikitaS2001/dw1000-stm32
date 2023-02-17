@@ -10,8 +10,8 @@
  *
  * @author DecaWave
  */
+#include "deca_port.h"
 #include "deca_sleep.h"
-#include "port.h"
 
 #define rcc_init(x)                 RCC_Configuration(x)
 #define systick_init(x)             SysTick_Configuration(x)

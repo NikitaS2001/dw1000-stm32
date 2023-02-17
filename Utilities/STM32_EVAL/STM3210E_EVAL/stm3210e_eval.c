@@ -33,7 +33,7 @@
 
 #include "deca_types.h"
 #include <string.h>
-#include "port.h"
+#include "deca_port.h"
 #include "deca_sleep.h"
 #include "deca_regs.h"
 

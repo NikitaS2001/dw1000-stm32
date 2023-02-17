@@ -11,13 +11,12 @@
  *
  * -------------------------------------------------------------------------------------------------------------------
 **/
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "deca_regs.h"
 #include "deca_device_api.h"
+#include "deca_regs.h"
 #include "deca_param_types.h"
 
+#include <stdio.h>
+#include <stdlib.h>
 
 //-----------------------------------------
 // map the channel number to the index in the configuration arrays below

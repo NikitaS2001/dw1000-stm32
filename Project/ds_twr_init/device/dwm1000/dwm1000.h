@@ -6,17 +6,21 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f10x.h"
+#include "kalman/kalman.h"
+
+#include "at24c16/AT24C02.h"
+
+#include "deca_lib/deca_device_api.h"
+#include "deca_lib/deca_port.h"
+#include "deca_lib/deca_regs.h"
+#include "deca_lib/deca_sleep.h"
+
+#include <stm32f10x.h>
+#include <stm32_eval.h>
+
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include "deca_device_api.h"
-#include "deca_regs.h"
-#include "deca_sleep.h"
-#include "port.h"
-#include <math.h>
-#include "kalman.h"
-#include "AT24C02.h"
-#include "stm32_eval.h"
 
 /* Default communication configuration. */
 static dwt_config_t config =

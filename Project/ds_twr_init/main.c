@@ -1,17 +1,22 @@
-#include "stm32f10x.h"
+#include "mainpp.h"
+
+#include "kalman/kalman.h"
+#include "math/vector.h"
+
+#include "at24c16/AT24C02.h"
+#include "dwm1000/dwm1000.h"
+
+#include "deca_lib/deca_device_api.h"
+#include "deca_lib/deca_port.h"
+#include "deca_lib/deca_regs.h"
+#include "deca_lib/deca_sleep.h"
+
+#include <stm32f10x.h>
+#include <stm32_eval.h>
+
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
-#include "deca_device_api.h"
-#include "deca_regs.h"
-#include "deca_sleep.h"
-#include "port.h"
-#include "math/vector.h"
-#include <math.h>
-#include "kalman.h"
-#include "AT24C02.h"
-#include "stm32_eval.h"
-#include "lib.h"
-#include "mainpp.h"
 
 extern char dist_str[16];
 extern uint8_t TAG_ID;

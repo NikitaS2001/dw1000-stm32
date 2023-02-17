@@ -1,12 +1,15 @@
-#include "stm32f10x.h"		
-#include "kalman.h"	
-#include "matrix.h"	
-#include <math.h>		
+#include "matrix.h"
+
+// TODO: fix this dependency
+#include "kalman/kalman.h"
+
+#include <stm32f10x.h>
+#include <math.h>
 
 void MatrixAdd(float *a, float *b, float *c, unsigned char m, unsigned char n)
 {
   unsigned char i;
-  
+
   for (i=0; i<m*n; i++)
   {
     c[i] = a[i] + b[i];
@@ -16,7 +19,7 @@ void MatrixAdd(float *a, float *b, float *c, unsigned char m, unsigned char n)
 void MatrixMinus(double *a, float *b, float *c, unsigned char m, unsigned char n)
 {
   unsigned char i;
-  
+
   for (i=0; i<m*n; i++)
   {
     c[i] = (float)a[i] - b[i];
@@ -26,7 +29,7 @@ void MatrixMinus(double *a, float *b, float *c, unsigned char m, unsigned char n
 void MatrixMul(float *a, float *b, float *c, unsigned char m, unsigned char p, unsigned char n)
 {
   unsigned char i,j,k;
-  
+
   for (i=0; i<m; i++)
   {
     for (j=0; j<n; j++)
@@ -43,7 +46,7 @@ void MatrixMul(float *a, float *b, float *c, unsigned char m, unsigned char p, u
 void MatrixTrans(float *a, float *c, unsigned char m, unsigned char n)
 {
   unsigned char i,j;
-  
+
   for (i=0; i<n; i++)
   {
     for (j=0; j<m; j++)
@@ -58,7 +61,7 @@ float MatrixDet1(float *a, unsigned char m, unsigned char n)
   signed char i, j, k, p, r;
   float Temp=1, Temp1=1, S=0, S1=0;
   float X;
-  
+
   if (n==2)
   {
     for(i=0; i<m; i++)
@@ -80,13 +83,13 @@ float MatrixDet1(float *a, unsigned char m, unsigned char n)
   else
   {
     for (k=0; k<n; k++)
-    { 
+    {
       for (i=0,j=k; i<m&&j<n; i++,j++)
       {
         Temp *= a[i*n+j];
       }
       if (m-i)
-      { 
+      {
         for (p=m-i,r=m-1; p>0; p--,r--)
         {
           Temp  *= a[r*n+p-1];
@@ -95,27 +98,27 @@ float MatrixDet1(float *a, unsigned char m, unsigned char n)
       S += Temp;
       Temp = 1;
     }
-      
-      
+
+
     for (k=n-1; k>=0; k--)
-    { 
+    {
       for(i=0,j=k; i<m&&j>=0; i++,j--)
       {
         Temp1 *= a[i*n+j];
       }
-      if (m-i) 
+      if (m-i)
       {
         for(p=m-1,r=i; r<m; p--,r++)
         {
           Temp1 *= a[r*n+p];
         }
-      } 
+      }
       S1 += Temp1;
       Temp1 = 1;
     }
     X=S-S1;
   }
-  
+
   return   X;
 }
 
@@ -124,10 +127,10 @@ void MatrixInv1(float *a, float *c, unsigned char m, unsigned char n)
   unsigned char i,j,k,x,y;
   float AB[LENGTH], SP[LENGTH], B[LENGTH];
   float X;
-  
+
   X = MatrixDet1(a, m, n);
   X = 1/X;
-  
+
   for (i=0; i<m; i++)
   {
     for (j=0; j<n; j++)
@@ -158,7 +161,7 @@ unsigned char Gauss_Jordan(float *a, unsigned char n)
     signed char is[ORDER];
     signed char js[ORDER];
     float d,p;
-    
+
     for (k=0; k<=n-1; k++)
       { d=0.0;
         for (i=k; i<=n-1; i++)
@@ -208,7 +211,7 @@ unsigned char Gauss_Jordan(float *a, unsigned char n)
               p=a[u]; a[u]=a[v]; a[v]=p;
             }
       }
-    
+
     return(1);
 }
 
@@ -216,7 +219,7 @@ void MatrixCal(float *a, float *b, float *c, unsigned char n)
 {
   float Temp1[LENGTH] = {0};
   float Temp2[LENGTH] = {0};
-  
+
   MatrixMul(a, b, Temp1, n, n, n);
   MatrixTrans(a, Temp2, n, n);
   MatrixMul(Temp1, Temp2, c, n, n, n);

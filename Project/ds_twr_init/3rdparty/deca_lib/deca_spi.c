@@ -10,13 +10,13 @@
  *
  * @author DecaWave
  */
-#include <string.h>
-
 #include "deca_spi.h"
-#include "deca_sleep.h"
-#include "deca_device_api.h"
-#include "port.h"
 
+#include "deca_device_api.h"
+#include "deca_port.h"
+#include "deca_sleep.h"
+
+#include <string.h>
 
 int writetospi_serial( uint16 headerLength,
 			   	    const uint8 *headerBuffer,

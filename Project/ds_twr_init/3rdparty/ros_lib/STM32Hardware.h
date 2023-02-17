@@ -40,7 +40,7 @@ extern "C"
 {
   #include <stm32f10x.h>
   #include <stm32f10x_usart.h>
-	#include "port.h"
+	#include "deca_port.h"
   #include "ringbuf.h"
 }
 

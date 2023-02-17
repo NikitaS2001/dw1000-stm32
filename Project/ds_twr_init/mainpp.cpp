@@ -1,9 +1,9 @@
-#include <mainpp.h>
+#include "mainpp.h"
 
-#include <deca_sleep.h>
+#include "deca_lib/deca_sleep.h"
 
-#include <ros.h>
-#include <std_msgs/String.h>
+#include "ros_lib/ros.h"
+#include "ros_lib/std_msgs/String.h"
 
 ros::NodeHandle nh;
 
@@ -25,4 +25,3 @@ void loop(void)
 
   deca_sleep(1000);
 }
-	
