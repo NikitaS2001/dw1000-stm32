@@ -12,6 +12,7 @@
 *.i
 *.bin
 *.hex
+*.map
 
 #Keil Project screen layout file
 *.uvguix.*
