@@ -330,9 +330,9 @@ int main(void)
     /* Start with board specific hardware init. */
     peripherals_init();
 
-		//Initializing ROS
-		//setup();
-	
+    //Initializing ROS
+    setup();
+
     printf("Initializing dwm1000...\r\n");
 
     /* Reset and initialise DW1000.
@@ -410,11 +410,16 @@ int main(void)
 
         Anchor_Array_Init();
         /* Loop forever initiating ranging exchanges. */
-				//ROS topic pub
-				//loop();
-				
+        //ROS topic pub
+
+        printf("Entering communication loop...\r\n");
+        while(1)
+        {
+            loop();
+        }
+
         //KalMan_PramInit();
-        ANTHOR_MEASURE();
+        // ANTHOR_MEASURE();
     }
 
     if(UserSetNow.ANCHOR_TAG==0)
