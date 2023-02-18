@@ -330,6 +330,9 @@ int main(void)
     /* Start with board specific hardware init. */
     peripherals_init();
 
+		//Initializing ROS
+		//setup();
+	
     printf("Initializing dwm1000...\r\n");
 
     /* Reset and initialise DW1000.
@@ -407,7 +410,9 @@ int main(void)
 
         Anchor_Array_Init();
         /* Loop forever initiating ranging exchanges. */
-
+				//ROS topic pub
+				//loop();
+				
         //KalMan_PramInit();
         ANTHOR_MEASURE();
     }
