@@ -36,8 +36,10 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 extern "C"
 {
+  #include <stm32_eval.h>
   #include <stm32f10x.h>
   #include <stm32f10x_usart.h>
 	#include "deca_port.h"
@@ -62,47 +64,16 @@ class STM32Hardware
 
     void init()
     {
-      // Get current clock
-      SystemCoreClockUpdate();
-      // Enable Systick interrupt
-      SysTick_Config(SystemCoreClock / SYSTICKHZ);
-      
-      // Enable the peripherals for UART2
-      GPIO_InitTypeDef GPIO_InitStructure;
-      USART_InitTypeDef USART_InitStruct;
+      // Attach to COM2 (USART2)
+      USART_InitTypeDef USART_InitStructure;
+      USART_InitStructure.USART_BaudRate = ROSSERIAL_BAUDRATE;
+      USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+      USART_InitStructure.USART_StopBits = USART_StopBits_1;
+      USART_InitStructure.USART_Parity = USART_Parity_No;
+      USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+      USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
-      //
-      // Configure UART2
-      //
-      // Enable UART2 clock
-      RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO | RCC_APB2Periph_GPIOA, ENABLE);
-      RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
-      
-      GPIO_PinRemapConfig(GPIO_Remap_USART2, DISABLE);
-      
-      // Configure UART2 Pins
-      GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_2;
-      GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-      GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-      GPIO_Init(GPIOA, &GPIO_InitStructure);
-      
-      GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_3;
-      GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-      GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-      GPIO_Init(GPIOA, &GPIO_InitStructure);
-      
-      // Configure UART2
-      USART_InitStruct.USART_BaudRate = ROSSERIAL_BAUDRATE;
-      USART_InitStruct.USART_WordLength = USART_WordLength_8b;
-      USART_InitStruct.USART_StopBits = USART_StopBits_2;
-      USART_InitStruct.USART_Parity = USART_Parity_No;
-      USART_InitStruct.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
-      USART_InitStruct.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-      // Init UART2
-      USART_Init(USART2, &USART_InitStruct);
-      
-      // Enable USART2
-      USART_Cmd(USART2, ENABLE);
+      STM_EVAL_COMInit(COM2, &USART_InitStructure);
       
       // Configure interrupts
       USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
@@ -124,23 +95,25 @@ class STM32Hardware
     int read()
     {
       if (RingBufUsed(&rxBuffer))
+      {
         return RingBufReadOne(&rxBuffer);
+      }
       else
+      {
         return -1;
+      }
     }
 
     // write data to the connection to ROS
     void write(uint8_t* data, int length)
     {
+      const bool bRingBufWasEmpty = RingBufEmpty(&txBuffer);
+      RingBufWrite(&txBuffer, data, length);
+  
       // Trigger sending buffer if not already sending
-      if(RingBufEmpty(&txBuffer))
+      if(bRingBufWasEmpty)
       {
-        RingBufWrite(&txBuffer, data, length);
         USART_SendData(USART2, (uint8_t)RingBufReadOne(&txBuffer));
-      }
-      else
-      {
-        RingBufWrite(&txBuffer, data, length);
       }
     }
 

@@ -607,7 +607,6 @@ void led_on (led_t led)
 #include "stm32_eval.h"
 void usartinit(void)
 {
-
     USART_InitTypeDef USART_InitStructure;
     //GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -619,15 +618,22 @@ void usartinit(void)
           - Hardware flow control disabled (RTS and CTS signals)
           - Receive and transmit enabled
     */
-   USART_InitStructure.USART_BaudRate = 115200;
-   USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-   USART_InitStructure.USART_StopBits = USART_StopBits_1;
-   USART_InitStructure.USART_Parity = USART_Parity_No;
-   USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-   USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 
-   STM_EVAL_COMInit(COM1, &USART_InitStructure);
+    STM_EVAL_COMInit(COM1, &USART_InitStructure);
 
+    NVIC_InitTypeDef NVIC_InitStructure;
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 55;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
 }
 
 void USART_puts(uint8_t *s,uint8_t len)
