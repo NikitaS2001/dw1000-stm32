@@ -1,10 +1,11 @@
-#include "mainpp.h"
+#include "comm/comm.h"
 
 #include "kalman/kalman.h"
 #include "math/vector.h"
 
 #include "at24c16/AT24C02.h"
 #include "dwm1000/dwm1000.h"
+#include "memory/flash.h"
 
 #include "deca_lib/deca_device_api.h"
 #include "deca_lib/deca_port.h"
@@ -18,6 +19,8 @@
 #include <stdio.h>
 #include <string.h>
 
+uint8 SWITCH_DIS = 0;
+
 extern char dist_str[16];
 extern uint8_t TAG_ID;
 extern uint8_t MASTER_TAG;
@@ -26,7 +29,6 @@ extern uint8_t ANCHOR_IND;
 extern uint8_t ANCHOR_IND; 
 extern uint8 Semaphore[MAX_SLAVE_TAG];
 
-vec3d AnchorList[ANCHOR_MAX_NUM];
 vec3d tag_best_solution;
 int Anthordistance[ANCHOR_MAX_NUM];
 
@@ -34,18 +36,6 @@ int Anthordistance_count[ANCHOR_MAX_NUM];
 
 int ANCHOR_REFRESH_COUNT_set=5;
 #define ANCHOR_REFRESH_COUNT ANCHOR_REFRESH_COUNT_set
-
-/* Private macro ---------- ---------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-
-/* Private function prototypes -----------------------------------------------*/
-#ifdef __GNUC__
-/* With GCC/RAISONANCE, small printf (option LD Linker->Libraries->Small printf
-   set to 'Yes') calls __io_putchar() */
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
 
 
 void dwt_dumpregisters(char *str, size_t strSize)
@@ -153,6 +143,8 @@ int Sum_Tag_Semaphore_request(void)
 
 void Tag_Measure_Dis(void)
 {
+    printf("Tag_Measure_Dis");
+
     uint8 dest_anthor = 0,frame_len = 0;
     float final_distance = 0;
     frame_seq_nb=0;
@@ -330,8 +322,8 @@ int main(void)
     /* Start with board specific hardware init. */
     peripherals_init();
 
-    //Initializing ROS
-    setup();
+    // Initializing ROS communication
+    CommInit();
 
     printf("Initializing dwm1000...\r\n");
 
@@ -369,21 +361,16 @@ int main(void)
 
     printf("init pass!\r\n");
 
-    AnchorList[0].x =0.12;
-    AnchorList[0].y =0.34;
-    AnchorList[0].z =0;
-
-    AnchorList[1].x =0.25;
-    AnchorList[1].y =0;
-    AnchorList[1].z =0;
-
-    AnchorList[2].x =0;
-    AnchorList[2].y =0;
-    AnchorList[2].z =0;
     int rx_ant_delay =32880;
     int index = 0 ;
 
-    extern UserSet UserSetNow;
+    typedef struct
+    {
+        uint16_t ANCHOR_TAG;      //{1 anchor 0 tag}
+        uint16_t ID;      //{1 anchor 0 tag}
+    
+    }UserSet;
+    UserSet UserSetNow;
     uint16_t buff[3]={1,0,0xff};
     FLASH_ReadMoreData(USER_FLASH_BASE,buff,3);
     if(buff[0]==1)
@@ -409,17 +396,10 @@ int main(void)
         printf("device:anchor ID:%d\r\n",ANCHOR_IND);
 
         Anchor_Array_Init();
+
         /* Loop forever initiating ranging exchanges. */
-        //ROS topic pub
-
-        printf("Entering communication loop...\r\n");
-        while(1)
-        {
-            loop();
-        }
-
         //KalMan_PramInit();
-        // ANTHOR_MEASURE();
+        ANTHOR_MEASURE();
     }
 
     if(UserSetNow.ANCHOR_TAG==0)
@@ -510,30 +490,7 @@ static void distance_mange(void)
             printf("%s\r\n",dist_str);
         }
     }
-
-    if(Anthordistance_count[0]>0)
-    {
-        sprintf(dist_str, "an0:%3.2fm", (float)Anthordistance[0]/1000);
-        //printf("%s\r\n",dist_str);
-    }
-
-    if(Anthordistance_count[1]>0)
-    {
-        sprintf(dist_str, "an1:%3.2fm", (float)Anthordistance[1]/1000);
-        //printf("%s\r\n",dist_str);
-    }
-
-    if(Anthordistance_count[2]>0)
-    {
-        sprintf(dist_str, "%3.2fm", (float)Anthordistance[2]/1000);
-        //AnthordistanceBuff[0]=Anthordistance[0];
-        //printf("an2:%s\r\n",dist_str);
-    }
-
-    // printf("Distance:%d,   %d,    %d mm\r\n",(int)((float)Anthordistance[0]/Anthordistance_count[0]),(int)((float)Anthordistance[1]/Anthordistance_count[1]),(int)((float)Anthordistance[2]/Anthordistance_count[2]));
 }
-
-#define DISTANCE3 0.27
 
 //**************************************************************//
 //distance1 anthor0 <--> TAG  mm
@@ -606,15 +563,4 @@ static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
         ts_field[i] = (uint8) ts;
         ts >>= 8;
     }
-}
-
-PUTCHAR_PROTOTYPE
-{
-    USART_ClearFlag(EVAL_COM1,USART_FLAG_TC);
-    /* e.g. write a character to the USART */
-    USART_SendData(EVAL_COM1, (uint8_t) ch);
-    /* Loop until the end of transmission */
-    while (USART_GetFlagStatus(EVAL_COM1, USART_FLAG_TC) == RESET)
-    {}
-    return ch;
 }

@@ -283,16 +283,7 @@
 #define LM75_DMA_TX_TCFLAG               DMA1_FLAG_TC6
 #define LM75_DMA_RX_TCFLAG               DMA1_FLAG_TC7
 
-
-
 #define USER_FLASH_BASE 0x08010000
-
-typedef struct
-{
-    uint16_t ANCHOR_TAG;      //{1 anchor 0 tag}
-	 uint16_t ID;      //{1 anchor 0 tag}
-   
-}UserSet;
 
 /**
   * @}

@@ -727,8 +727,6 @@ void peripherals_init (void)
 #ifdef STM32F10X_MD
     MX_I2C1_Init();
 #endif
-    drv_lis2dh12_init();
-    SHT20_init();
 }
 
 

@@ -31,8 +31,8 @@
 //
 //*****************************************************************************
 
-#ifndef ROS_LIB_STM32_HARDWARE_H
-#define ROS_LIB_STM32_HARDWARE_H
+#ifndef STM32_HARDWARE_H
+#define STM32_HARDWARE_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -129,4 +129,5 @@ class STM32Hardware
       return SystemCoreClock;
     }
 };
-#endif  // ROS_LIB_STM32_HARDWARE_H
+
+#endif  // STM32_HARDWARE_H

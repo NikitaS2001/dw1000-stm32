@@ -102,7 +102,7 @@ typedef enum
 #define TA_BOOT1                 	GPIO_Pin_2
 #define TA_BOOT1_GPIO            	GPIOB
 
-//PC0¸´ÓÃESP8266_CHPD
+//PC0ï¿½ï¿½ï¿½ï¿½ESP8266_CHPD
 #define TA_RESP_DLY                 GPIO_Pin_0
 #define TA_RESP_DLY_GPIO            GPIOC
 
@@ -150,10 +150,6 @@ int is_switch_on(uint16_t GPIOpin);
 #define port_SPIy_enable()              SPI_Cmd(SPIy,ENABLE)
 #define port_SPIy_set_chip_select()		GPIO_SetBits(SPIy_CS_GPIO,SPIy_CS)
 #define port_SPIy_clear_chip_select()	GPIO_ResetBits(SPIy_CS_GPIO,SPIy_CS)
-#define port_LCD_RS_set()				GPIO_SetBits(SPIy_GPIO,LCD_RS)
-#define port_LCD_RS_clear()				GPIO_ResetBits(SPIy_GPIO,LCD_RS)
-#define port_LCD_RW_set()				GPIO_SetBits(SPIy_GPIO,LCD_RW)
-#define port_LCD_RW_clear()				GPIO_ResetBits(SPIy_GPIO,LCD_RW)
 
 #define port_GET_stack_pointer()		__get_MSP()
 #define port_GET_rtc_time()				RTC_GetCounter()
@@ -167,11 +163,6 @@ ITStatus EXTI_GetITEnStatus(uint32_t x);
 #define port_CheckEXT_IRQ()                 GPIO_ReadInputDataBit(DECAIRQ_GPIO, DECAIRQ)
 int NVIC_DisableDECAIRQ(void);
 
-//define LCD functions
-#define port_LCD_Clear(x) 											0
-#define port_LCD_SetBackColor(x) 									0
-#define port_LCD_SetTextColor(x) 									0
-#define port_LCD_DisplayString(line, column, font_index, buffer) 	0
 int is_IRQ_enabled(void);
 
 int is_button_low(uint16_t GPIOpin);
