@@ -1207,11 +1207,6 @@
               <FilePath>Source\platform\deca_mutex.c</FilePath>
             </File>
             <File>
-              <FileName>deca_sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\platform\deca_sleep.c</FilePath>
-            </File>
-            <File>
               <FileName>deca_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>Source\platform\deca_spi.c</FilePath>
@@ -2484,11 +2479,6 @@
               <FileName>deca_mutex.c</FileName>
               <FileType>1</FileType>
               <FilePath>Source\platform\deca_mutex.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\platform\deca_sleep.c</FilePath>
             </File>
             <File>
               <FileName>deca_spi.c</FileName>
@@ -3843,11 +3833,6 @@
               <FileName>deca_mutex.c</FileName>
               <FileType>1</FileType>
               <FilePath>Source\platform\deca_mutex.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\platform\deca_sleep.c</FilePath>
             </File>
             <File>
               <FileName>deca_spi.c</FileName>
@@ -5284,11 +5269,6 @@
               <FilePath>Source\platform\deca_mutex.c</FilePath>
             </File>
             <File>
-              <FileName>deca_sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\platform\deca_sleep.c</FilePath>
-            </File>
-            <File>
               <FileName>deca_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>Source\platform\deca_spi.c</FilePath>
@@ -6561,11 +6541,6 @@
               <FileName>deca_mutex.c</FileName>
               <FileType>1</FileType>
               <FilePath>Source\platform\deca_mutex.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\platform\deca_sleep.c</FilePath>
             </File>
             <File>
               <FileName>deca_spi.c</FileName>
@@ -7960,11 +7935,6 @@
               <FileName>deca_mutex.c</FileName>
               <FileType>1</FileType>
               <FilePath>Source\platform\deca_mutex.c</FilePath>
-            </File>
-            <File>
-              <FileName>deca_sleep.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\platform\deca_sleep.c</FilePath>
             </File>
             <File>
               <FileName>deca_spi.c</FileName>

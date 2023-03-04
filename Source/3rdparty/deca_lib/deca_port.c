@@ -11,7 +11,8 @@
  * @author DecaWave
  */
 #include "deca_port.h"
-#include "deca_sleep.h"
+
+#include <FreeRTOS.h>
 
 #define rcc_init(x)                 RCC_Configuration(x)
 #define systick_init(x)             SysTick_Configuration(x)
@@ -456,7 +457,7 @@ void reset_DW1000(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(DW1000_RSTn_GPIO, &GPIO_InitStructure);
 
-    deca_sleep(2);
+    vTaskDelay(2);
 }
 
 

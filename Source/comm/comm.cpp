@@ -1,9 +1,10 @@
 #include "comm.h"
 
-#include "deca_lib/deca_sleep.h"
-
 #include "ros_lib/ros.h"
 #include "ros_lib/std_msgs/String.h"
+
+#include <FreeRTOS.h>
+#include <task.h>
 
 #include <stdio.h>
 
@@ -25,5 +26,5 @@ void loop(void)
     chatter.publish(&str_msg);
     nh.spinOnce();
 
-    deca_sleep(1000);
+    vTaskDelay(1000);
 }

@@ -13,7 +13,6 @@ extern "C" {
 #include "deca_lib/deca_device_api.h"
 #include "deca_lib/deca_port.h"
 #include "deca_lib/deca_regs.h"
-#include "deca_lib/deca_sleep.h"
 
 #include <stm32f10x.h>
 #include <stm32_eval.h>

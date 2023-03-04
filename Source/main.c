@@ -10,7 +10,10 @@
 #include "deca_lib/deca_device_api.h"
 #include "deca_lib/deca_port.h"
 #include "deca_lib/deca_regs.h"
-#include "deca_lib/deca_sleep.h"
+
+#include <FreeRTOS.h>
+#include <task.h>
+#include <queue.h>
 
 #include <stm32f10x.h>
 #include <stm32_eval.h>
@@ -302,7 +305,7 @@ void Tag_Measure_Dis(void)
             dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_ERR);
         }
         /* Execute a delay between ranging exchanges. */
-        // deca_sleep(RNG_DELAY_MS);
+        // vTaskDelay(RNG_DELAY_MS);
         frame_seq_nb++;
     }
 
@@ -310,7 +313,7 @@ void Tag_Measure_Dis(void)
 
 double final_distance =  0;
 
-int main(void)
+void vMainTask(void *pvParameters)
 {
     uint8 anthor_index = 0;
     uint8 tag_index = 0;
@@ -318,12 +321,6 @@ int main(void)
     uint8 Semaphore_Enable = 0 ;
     uint8 Waiting_TAG_Release_Semaphore = 0;
     int8 frame_len = 0;
-
-    /* Start with board specific hardware init. */
-    peripherals_init();
-
-    // Initializing ROS communication
-    CommInit();
 
     printf("Initializing dwm1000...\r\n");
 
@@ -337,15 +334,16 @@ int main(void)
 
     if(dwt_initialise(DWT_LOADUCODE) == -1)
     {
-        printf("dwm1000 init fail!\r\n");
+        printf("dwm1000 init is failed!\r\n");
+
+        // Blink LED when init is failed
         while (1)
         {
-            //STM_EVAL_LEDOn(LED1);
-            GPIO_SetBits(GPIOC,GPIO_Pin_13);
-            deca_sleep(1000);
-            //STM_EVAL_LEDOff(LED1);
-            GPIO_ResetBits(GPIOC,GPIO_Pin_13);
-            deca_sleep(1000);
+            GPIO_SetBits(GPIOC, GPIO_Pin_13);
+            vTaskDelay(1000);
+
+            GPIO_ResetBits(GPIOC, GPIO_Pin_13);
+            vTaskDelay(1000);
         }
     }
 
@@ -359,7 +357,7 @@ int main(void)
     dwt_setrxantennadelay(RX_ANT_DLY);
     dwt_settxantennadelay(TX_ANT_DLY);
 
-    printf("init pass!\r\n");
+    printf("Init pass!\r\n");
 
     int rx_ant_delay =32880;
     int index = 0 ;
@@ -432,6 +430,22 @@ int main(void)
         //Master TAG0
         TAG_MEASURE();
     }
+
+    vTaskDelete(NULL);	
+}
+
+int main(void)
+{
+    /* Start with board specific hardware init. */
+    peripherals_init();
+
+    // Initializing ROS communication
+    // CommInit();
+
+    xTaskCreate(vMainTask, (signed char*)"MainTask", configMINIMAL_STACK_SIZE,
+					NULL, tskIDLE_PRIORITY + 1, NULL);
+
+    vTaskStartScheduler();
 }
 
 #define Filter_N 5  //max filter use in this system

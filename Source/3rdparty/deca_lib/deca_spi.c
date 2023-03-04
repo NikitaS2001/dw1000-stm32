@@ -14,7 +14,6 @@
 
 #include "deca_device_api.h"
 #include "deca_port.h"
-#include "deca_sleep.h"
 
 #include <string.h>
 

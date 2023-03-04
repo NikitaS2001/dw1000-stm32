@@ -2,6 +2,8 @@
 
 #include "memory/flash.h"
 
+#include <FreeRTOS.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -11,12 +13,9 @@
 // UART interface that is used by shell
 #define SHELL_IFACE EVAL_COM1
 
-// Max bytes for buffered command in shell
-#define SHELL_RX_BUF_SIZE 512
-
 #define DECLARE_SHELL_PROCEDURE(name) {#name, ShellProc_##name}
 
-typedef int (*TShellProcHandler)(int opt, int argc, char *argv[]);
+typedef int (*TShellProcHandler)(int argc, char *argv[]);
 
 struct SShellProc
 {
@@ -66,33 +65,24 @@ int fputc(int ch, FILE *f)
 }
 #endif
 
-void* operator new(size_t n)
+int ShellProc_interval(int argc, char *argv[])
 {
-    return malloc(n);
-}
-
-void operator delete(void * p)
-{
-    free(p);
-}
-
-void operator delete(void * p, size_t n)
-{
-    free(p);
-}
-
-int ShellProc_interval(int opt,int argc, char *argv[])
-{
+    printf("ShellProc_interval\r\n");
     return 1;
 }
 
-int ShellProc_device_id(int opt,int argc, char *argv[])
+int ShellProc_device_id(int argc, char *argv[])
 {
+    printf("ShellProc_device_id\r\n");
     return 1;
 }
 
-int ShellProc_help(int opt,int argc, char *argv[])
+int ShellProc_help(int argc, char *argv[])
 {
+    printf("Application commands:\r\n");
+    printf("\tinterval [set] [val]  - read/write ranging interval (5-20)\r\n");
+    printf("\tdevice_id [set] [val] - read/write device unique id number\r\n");
+    printf("\thelp                  - show list of commands\r\n");
     return 1;
 }
 
@@ -124,18 +114,26 @@ void ShellDispatchCmd(const std::string& cmd)
         }
     }
 
-    /*if (args.empty())
+    if (args.empty())
     {
         return;
     }
+
+    bool bCmdFound = false;
 
     for (int i = 0; i < sizeof(shellProcedures) / sizeof(SShellProc); ++i)
     {
         if (args[0] == shellProcedures[i].name)
         {
-            shellProcedures[i].handler(0, 0, 0);
+            shellProcedures[i].handler(0, 0);
+            bCmdFound = true;
         }
-    }*/
+    }
+
+    if (!bCmdFound)
+    {
+        printf("Command '%s' doesn't exist! Use 'help' to see list of commands.\r\n", args[0].c_str());
+    }
 }
 
 void ShellRecv(char data)
@@ -143,7 +141,7 @@ void ShellRecv(char data)
     static std::string rxBuf;
 
     // Echo
-    // putchar(data);
+    putchar(data);
 
     if (data == '\n')
     {
@@ -154,14 +152,4 @@ void ShellRecv(char data)
     {
         rxBuf += data;
     }
-
-    size_t n = rxBuf.size();
-    void* ptr = malloc(n);
-    printf("Allocated %d bytes, result = %p\r\n", n, ptr);
-    if (ptr != 0)
-    {
-        free(ptr);
-    }
-
-
 }

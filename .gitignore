@@ -21,6 +21,9 @@
 # JLINK file
 JLinkLog.txt
 
+# Debugger files
+*.scvd
+
 # Temp files
 *.tmp
 
