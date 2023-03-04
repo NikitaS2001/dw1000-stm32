@@ -1,5 +1,6 @@
 #include "comm/comm.h"
 
+#include "config/config.h"
 #include "kalman/kalman.h"
 #include "math/vector.h"
 #include "shell/shell.h"
@@ -41,79 +42,6 @@ int Anthordistance_count[ANCHOR_MAX_NUM];
 int ANCHOR_REFRESH_COUNT_set=5;
 #define ANCHOR_REFRESH_COUNT ANCHOR_REFRESH_COUNT_set
 
-
-void dwt_dumpregisters(char *str, size_t strSize)
-{
-    uint32 reg = 0;
-    uint8 buff[5];
-    int i;
-    int cnt ;
-
-    //reg 0x24
-    for(i=0; i<=12; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x24,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x24,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x27
-    for(i=0; i<=44; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x27,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x27,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x28
-    for(i=0; i<=64; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x28,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x28,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x2A
-    for(i=0; i<20; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x2A,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x2A,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x2B
-    for(i=0; i<24; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x2B,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x2B,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x2f
-    for(i=0; i<40; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x2f,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x2f,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x31
-    for(i=0; i<84; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x31,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x31,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-
-    //reg 0x36 = PMSC_ID
-    for(i=0; i<=48; i+=4)
-    {
-        reg = dwt_read32bitoffsetreg(0x36,i) ;
-        str += cnt = sprintf(str,"reg[%02X:%02X]=%08X",0x36,i,reg) ;
-        str += cnt = sprintf(str,"\n") ;
-    }
-}
-
 void Anchor_Array_Init(void)
 {
     int anchor_index = 0;
@@ -144,13 +72,11 @@ int Sum_Tag_Semaphore_request(void)
     return sum_request;
 }
 
-
 void Tag_Measure_Dis(void)
 {
     printf("Tag_Measure_Dis");
 
     uint8 dest_anthor = 0,frame_len = 0;
-    float final_distance = 0;
     frame_seq_nb=0;
 
     for(dest_anthor = 0 ;  dest_anthor<ANCHOR_MAX_NUM; dest_anthor++)
@@ -266,7 +192,6 @@ void Tag_Measure_Dis(void)
 
                     if (memcmp(rx_buffer, distance_msg, ALL_MSG_COMMON_LEN) == 0)
                     {
-                        // final_distance = rx_buffer[10] + (float)rx_buffer[11]/100;
                         Anthordistance[rx_buffer[12]] +=(rx_buffer[10]*1000 + rx_buffer[11]*10);
                         Anthordistance_count[rx_buffer[12]] ++;
                         {
@@ -312,30 +237,22 @@ void Tag_Measure_Dis(void)
 
 }
 
-double final_distance =  0;
-
 void vMainTask(void *pvParameters)
 {
-    uint8 anthor_index = 0;
-    uint8 tag_index = 0;
-
-    uint8 Semaphore_Enable = 0 ;
-    uint8 Waiting_TAG_Release_Semaphore = 0;
-    int8 frame_len = 0;
-
-    printf("Initializing dwm1000...\r\n");
+    printf("Initializing DWM1000...\r\n");
 
     /* Reset and initialise DW1000.
      * For initialisation, DW1000 clocks must be temporarily set to crystal speed. After initialisation SPI rate can be increased for optimum
      * performance. */
 
-    reset_DW1000(); /* Target specific drive of RSTn line into DW1000 low for a period. */
+    reset_DW1000();
+
+    /* Target specific drive of RSTn line into DW1000 low for a period. */
     spi_set_rate_low();
 
-
-    if(dwt_initialise(DWT_LOADUCODE) == -1)
+    if (dwt_initialise(DWT_LOADUCODE) == -1)
     {
-        printf("dwm1000 init is failed!\r\n");
+        printf("DWM1000 init is failed!\r\n");
 
         // Blink LED when init is failed
         while (1)
@@ -360,77 +277,43 @@ void vMainTask(void *pvParameters)
 
     printf("Init pass!\r\n");
 
-    int rx_ant_delay =32880;
-    int index = 0 ;
+    SRuntimeConfig cfg = ConfigRead();
 
-    typedef struct
-    {
-        uint16_t ANCHOR_TAG;      //{1 anchor 0 tag}
-        uint16_t ID;      //{1 anchor 0 tag}
+#ifdef BEACON
+
+    printf("Device type: BEACON (anchor)\r\n");
+    printf("Device id: %d\r\n", cfg.deviceId);
+
+    ANCHOR_IND = cfg.deviceId;
+
+    Anchor_Array_Init();
+
+    /* Loop forever initiating ranging exchanges. */
+    //KalMan_PramInit();
+    ANTHOR_MEASURE();
+
+#else
+
+    printf("Device type: SENSOR (tag)\r\n");
+    printf("Device id: %d\r\n", cfg.deviceId);
+
+    TAG_ID = cfg.deviceId;
+    MASTER_TAG = TAG_ID;
+
+    /* Set expected response's delay and timeout.
+     * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
+    dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
+    dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
     
-    }UserSet;
-    UserSet UserSetNow;
-    uint16_t buff[3]={1,0,0xff};
-    FLASH_ReadMoreData(USER_FLASH_BASE,buff,3);
-    if(buff[0]==1)
+    if(TAG_ID == MASTER_TAG)
     {
-        UserSetNow.ANCHOR_TAG=1;
-    }
-    else if(buff[0]==0)
-    {
-        UserSetNow.ANCHOR_TAG=0;
-    }
-    else
-    {
-        UserSetNow.ANCHOR_TAG=1;
+        Semaphore_Init();
     }
 
-    if(UserSetNow.ANCHOR_TAG==1)
-    {
-        if(buff[1]>=0 && buff[1]<=255)
-        {
-            UserSetNow.ID=buff[1];
-            ANCHOR_IND=UserSetNow.ID;
-        }
-        printf("device:anchor ID:%d\r\n",ANCHOR_IND);
+    //Master TAG0
+    TAG_MEASURE();
 
-        Anchor_Array_Init();
-
-        /* Loop forever initiating ranging exchanges. */
-        //KalMan_PramInit();
-        ANTHOR_MEASURE();
-    }
-
-    if(UserSetNow.ANCHOR_TAG==0)
-    {
-        if(buff[1]>=0 && buff[1]<=255)
-        {
-            UserSetNow.ID=buff[1];
-            TAG_ID=UserSetNow.ID;
-            MASTER_TAG=TAG_ID;
-        }
-
-        printf("device:TAG ID:%d\r\n",UserSetNow.ID);
-
-        /* Set expected response's delay and timeout.
-        * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
-        dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
-        dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
-        
-        if(TAG_ID ==  MASTER_TAG)
-        {
-            Semaphore_Enable = 1 ;
-            Semaphore_Init();
-            Waiting_TAG_Release_Semaphore = 0;
-        }
-        else
-        {
-            Semaphore_Enable = 0 ;
-        }
-
-        //Master TAG0
-        TAG_MEASURE();
-    }
+#endif
 
     vTaskDelete(NULL);	
 }
@@ -442,11 +325,13 @@ int main(void)
 
     ShellInit();
 
-    // Initializing ROS communication
-    // CommInit();
-
-    xTaskCreate(vMainTask, (signed char*)"MainTask", configMINIMAL_STACK_SIZE,
-					NULL, tskIDLE_PRIORITY + 1, NULL);
+    xTaskCreate(
+        vMainTask,
+        "MainTask",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_PRIORITY + 1,
+        NULL);
 
     vTaskStartScheduler();
 }
@@ -496,9 +381,6 @@ static void distance_mange(void)
         }
     }
 
-    compute_angle_send_to_anthor0(Anthordistance[0], Anthordistance[1],Anthordistance[2]);
-
-
     for(int j=0;j<ANCHOR_MAX_NUM;j++)
     {
         if(Anthordistance_count[j]>0)
@@ -507,69 +389,6 @@ static void distance_mange(void)
             printf("%s\r\n",dist_str);
         }
     }
-}
-
-//**************************************************************//
-//distance1 anthor0 <--> TAG  mm
-//distance2 anthor1 <--> TAG  mm
-//distance3 anthor2 <--> TAG  mm
-//**************************************************************//
-static void compute_angle_send_to_anthor0(int distance1, int distance2,int distance3)
-{
-    static int framenum = 0 ;
-
-    //location
-    {
-        uint8 len = 0;
-        angle_msg[LOCATION_FLAG_IDX] = 1;
-
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = 'm';
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = 'r';
-
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = 0x02;
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = TAG_ID;//TAG ID
-
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = (uint8)(framenum&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = (uint8)((framenum>>8)&0xFF);
-
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = (uint8)((distance1/10)&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = (uint8)((distance1/10 >>8)&0xFF);
-
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] =  (uint8)((distance2/10)&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] =  (uint8)((distance2/10 >>8)&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] =  (uint8)((distance3/10)&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] =  (uint8)((distance3/10 >>8)&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = (uint8)((distance1/10)&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = (uint8)((distance1/10 >>8)&0xFF);
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = '\n';
-        angle_msg[LOCATION_INFO_START_IDX + (len++)] = '\r';
-
-
-        angle_msg[LOCATION_INFO_LEN_IDX] = len;
-        //MAX LEN
-        if(LOCATION_INFO_START_IDX + len -2 >ANGLE_MSG_MAX_LEN)
-        {
-            while(1);//toggle LED
-        }
-        //USART_puts((char*)dist_str,16);
-
-    }
-
-    //only anthor0 recive angle message
-    angle_msg[ALL_MSG_SN_IDX] = framenum;
-    angle_msg[ALL_MSG_TAG_IDX] = TAG_ID;
-
-    dwt_writetxdata(sizeof(angle_msg), angle_msg, 0);
-    dwt_writetxfctrl(sizeof(angle_msg), 0);
-
-    /* Start transmission, indicating that a response is expected so that reception is enabled automatically after the frame is sent and the delay
-     * set by dwt_setrxaftertxdelay() has elapsed. */
-    dwt_starttx(DWT_START_TX_IMMEDIATE );
-
-    while (!(dwt_read32bitreg(SYS_STATUS_ID) & SYS_STATUS_TXFRS))
-    { };
-
-    framenum++;
 }
 
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts)

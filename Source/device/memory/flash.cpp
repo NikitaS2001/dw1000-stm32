@@ -21,7 +21,7 @@ uint32_t FLASH_ReadWord(uint32_t address)
     return (temp2 << 16) + temp1;
 }
 
-void FLASH_ReadMoreData(uint32_t startAddress, uint16_t* readData, uint16_t countToRead)
+void FlashRead(uint32_t startAddress, uint16_t* readData, uint16_t countToRead)
 {
     if (startAddress < FLASH_BASE || (startAddress + countToRead * 2) >= (FLASH_BASE + 1024 * FLASH_SIZE))
     {
@@ -35,7 +35,7 @@ void FLASH_ReadMoreData(uint32_t startAddress, uint16_t* readData, uint16_t coun
     }
 }
 
-void FLASH_WriteMoreData(uint32_t startAddress, uint16_t* writeData, uint16_t countToWrite)
+void FlashWrite(uint32_t startAddress, uint16_t* writeData, uint16_t countToWrite)
 {
     if (startAddress < FLASH_BASE || (startAddress + countToWrite * 2) >= (FLASH_BASE + 1024 * FLASH_SIZE))
     {

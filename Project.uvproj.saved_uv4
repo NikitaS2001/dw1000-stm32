@@ -397,9 +397,9 @@
               <FilePath>Source\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>main.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>Source\main.c</FilePath>
+              <FilePath>Source\main.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -1631,9 +1631,9 @@
               <FilePath>Source\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>main.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>Source\main.c</FilePath>
+              <FilePath>Source\main.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -2905,9 +2905,9 @@
               <FilePath>Source\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>main.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>Source\main.c</FilePath>
+              <FilePath>Source\main.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -4259,9 +4259,9 @@
               <FilePath>Source\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>main.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>Source\main.c</FilePath>
+              <FilePath>Source\main.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -5693,9 +5693,9 @@
               <FilePath>Source\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>main.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>Source\main.c</FilePath>
+              <FilePath>Source\main.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -6967,9 +6967,9 @@
               <FilePath>Source\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>main.c</FileName>
+              <FileName>main.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>Source\main.c</FilePath>
+              <FilePath>Source\main.cpp</FilePath>
             </File>
           </Files>
         </Group>

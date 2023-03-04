@@ -1,5 +1,6 @@
 #include "shell.h"
 
+#include "config/config.h"
 #include "memory/flash.h"
 
 #include <FreeRTOS.h>
@@ -8,6 +9,7 @@
 #include <vector>
 
 #include <stdio.h>
+#include <stdlib.h>
 
 // UART interface that is used by shell
 #define SHELL_IFACE EVAL_COM1
@@ -16,7 +18,7 @@
 
 #define DECLARE_SHELL_PROCEDURE(name) {#name, ShellProc_##name}
 
-typedef void(*TShellProcHandler)(int argc, char *argv[]);
+typedef void(*TShellProcHandler)(std::vector<std::string> argv);
 
 struct SShellProc
 {
@@ -81,21 +83,94 @@ int fputc(int ch, FILE *f)
 }
 #endif
 
-void ShellProc_interval(int argc, char *argv[])
+void ShellProc_interval(std::vector<std::string> argv)
 {
-    printf("ShellProc_interval\r\n");
+    SRuntimeConfig cfg = ConfigRead();
+
+    if (argv.size() > 1)
+    {
+        if (argv[1] == "set")
+        {
+            if (argv.size() > 2)
+            {
+                const int newInt = atoi(argv[2].c_str());
+                if (newInt >= 5 && newInt <= 20)
+                {
+                    cfg.refreshInt = newInt;
+                    ConfigWrite(cfg);
+                    printf("Ranging interval is set to '%d'\r\n", cfg.refreshInt);
+                }
+                else
+                {
+                    printf("Invalid interval '%d', must be in range [5-20]\r\n", newInt);
+                }
+            }
+            else
+            {
+                printf("Interval is not specified!\r\n");
+            }
+        }
+        else
+        {
+            printf("Unknown arg '%s'!\r\n", argv[1].c_str());
+        }
+    }
+    else
+    {
+        printf("Ranging interval: %d\r\n", cfg.refreshInt);
+    }
 }
 
-void ShellProc_device_id(int argc, char *argv[])
+void ShellProc_device_id(std::vector<std::string> argv)
 {
-    printf("ShellProc_device_id\r\n");
+    SRuntimeConfig cfg = ConfigRead();
+
+    if (argv.size() > 1)
+    {
+        if (argv[1] == "set")
+        {
+            if (argv.size() > 2)
+            {
+                const int newDevId = atoi(argv[2].c_str());
+                if (newDevId >= 0 && newDevId <= 255)
+                {
+                    cfg.deviceId = newDevId;
+                    ConfigWrite(cfg);
+                    printf("Device ID is set to '%d'\r\n", cfg.deviceId);
+                }
+                else
+                {
+                    printf("Invalid ID '%d', must be in range [0-255]\r\n", newDevId);
+                }
+            }
+            else
+            {
+                printf("Device ID is not specified!\r\n");
+            }
+        }
+        else
+        {
+            printf("Unknown arg '%s'!\r\n", argv[1].c_str());
+        }
+    }
+    else
+    {
+        printf("Device ID: %d\r\n", cfg.deviceId);
+    }
 }
 
-void ShellProc_help(int argc, char *argv[])
+void ShellProc_reset(std::vector<std::string> argv)
+{
+    printf("HW reset initiated...\r\n");
+    NVIC_SystemReset();
+}
+
+void ShellProc_help(std::vector<std::string> argv)
 {
     printf("Application commands:\r\n");
-    printf("\tinterval [set] [val]  - read/write ranging interval (5-20)\r\n");
-    printf("\tdevice_id [set] [val] - read/write device unique id number\r\n");
+    printf("\tinterval [set] [val]  - read/write ranging interval [5-20]\r\n");
+    printf("\tdevice_id [set] [val] - read/write device unique id number [0-255]\r\n");
+    printf("\treset                 - system hard reboot\r\n");
     printf("\thelp                  - show list of commands\r\n");
 }
 
@@ -103,6 +178,7 @@ SShellProc shellProcedures[] =
 {
     DECLARE_SHELL_PROCEDURE(interval),
     DECLARE_SHELL_PROCEDURE(device_id),
+    DECLARE_SHELL_PROCEDURE(reset),
     DECLARE_SHELL_PROCEDURE(help),
 };
 
@@ -138,7 +214,7 @@ void ShellDispatchCmd(const std::string& cmd)
     {
         if (args[0] == shellProcedures[i].name)
         {
-            shellProcedures[i].handler(0, 0);
+            shellProcedures[i].handler(args);
             bCmdFound = true;
         }
     }

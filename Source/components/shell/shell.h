@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-void ShellInit();
+void ShellInit(void);
 
 #ifdef __cplusplus
 }
