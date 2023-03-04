@@ -2,6 +2,7 @@
 
 #include "kalman/kalman.h"
 #include "math/vector.h"
+#include "shell/shell.h"
 
 #include "at24c16/AT24C02.h"
 #include "dwm1000/dwm1000.h"
@@ -438,6 +439,8 @@ int main(void)
 {
     /* Start with board specific hardware init. */
     peripherals_init();
+
+    ShellInit();
 
     // Initializing ROS communication
     // CommInit();

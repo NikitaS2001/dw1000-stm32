@@ -1,6 +1,13 @@
-#ifndef __SHELL_H
-#define __SHELL_H
+#pragma once
 
 #include <stm3210e_eval.h>
 
-#endif // __SHELL_H
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void ShellInit();
+
+#ifdef __cplusplus
+}
+#endif

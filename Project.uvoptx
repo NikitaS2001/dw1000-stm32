@@ -263,8 +263,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>Source\device\at24c16\AT24C02.c</PathWithFileName>
-      <FilenameWithoutPath>AT24C02.c</FilenameWithoutPath>
+      <PathWithFileName>Source\device\at24c16\AT24C02.cpp</PathWithFileName>
+      <FilenameWithoutPath>AT24C02.cpp</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -455,8 +455,8 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\Source\device\memory\flash.c</PathWithFileName>
-      <FilenameWithoutPath>flash.c</FilenameWithoutPath>
+      <PathWithFileName>.\Source\device\memory\flash.cpp</PathWithFileName>
+      <FilenameWithoutPath>flash.cpp</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

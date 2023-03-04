@@ -1,7 +1,10 @@
-#ifndef AT24C02_H_
-#define AT24C02_H_
+#pragma once
 
 #include <stm32f10x_i2c.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void AT24C02_Write(I2C_TypeDef* I2Cx, unsigned char AddressDevice, unsigned char AddressByte, unsigned char Value);
 unsigned char AT24C02_Read(I2C_TypeDef* I2Cx, unsigned char AddressDevice, unsigned char AddressByte);
@@ -28,4 +31,6 @@ void I2C_EE_PageWrite(u8* pBuffer, u8 WriteAddr, u8 NumByteToWrite);
 void I2C_EE_BufferRead(u8* pBuffer, u8 ReadAddr, u16 NumByteToRead);
 void I2C_EE_WaitEepromStandbyState(void);
 
-#endif /* AT24C02_H_ */
+#ifdef __cplusplus
+}
+#endif

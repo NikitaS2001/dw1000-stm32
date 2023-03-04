@@ -4,18 +4,19 @@
 
 #include <FreeRTOS.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include <string>
 #include <vector>
+
+#include <stdio.h>
 
 // UART interface that is used by shell
 #define SHELL_IFACE EVAL_COM1
 
+#define SHELL_PROMPT "> "
+
 #define DECLARE_SHELL_PROCEDURE(name) {#name, ShellProc_##name}
 
-typedef int (*TShellProcHandler)(int argc, char *argv[]);
+typedef void(*TShellProcHandler)(int argc, char *argv[]);
 
 struct SShellProc
 {
@@ -27,6 +28,11 @@ struct SShellProc
 // Execute a buffered command if the byte is a new-line character
 void ShellRecv(char data);
 
+// Is shell enabled
+// Commands and print via shell interface are ignored if shell is not enabled
+// This allows use silent mode, when nothing is printed to and received from the console
+static bool g_bShellInitialized = false;
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -34,6 +40,11 @@ extern "C"
 
 void USART1_IRQHandler(void)
 {
+    if (!g_bShellInitialized)
+    {
+        return;
+    }
+
     if(USART_GetITStatus(SHELL_IFACE, USART_IT_RXNE) != RESET)
     {
         // Read one byte from the receive data register
@@ -50,6 +61,11 @@ int __io_putchar(int ch)
 int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 {
+    if (!g_bShellInitialized)
+    {
+        return ch;
+    }
+
     USART_ClearFlag(SHELL_IFACE, USART_FLAG_TC);
     /* Write a character to shell */
     USART_SendData(SHELL_IFACE, (uint8_t) ch);
@@ -65,25 +81,22 @@ int fputc(int ch, FILE *f)
 }
 #endif
 
-int ShellProc_interval(int argc, char *argv[])
+void ShellProc_interval(int argc, char *argv[])
 {
     printf("ShellProc_interval\r\n");
-    return 1;
 }
 
-int ShellProc_device_id(int argc, char *argv[])
+void ShellProc_device_id(int argc, char *argv[])
 {
     printf("ShellProc_device_id\r\n");
-    return 1;
 }
 
-int ShellProc_help(int argc, char *argv[])
+void ShellProc_help(int argc, char *argv[])
 {
     printf("Application commands:\r\n");
     printf("\tinterval [set] [val]  - read/write ranging interval (5-20)\r\n");
     printf("\tdevice_id [set] [val] - read/write device unique id number\r\n");
     printf("\thelp                  - show list of commands\r\n");
-    return 1;
 }
 
 SShellProc shellProcedures[] =
@@ -143,13 +156,46 @@ void ShellRecv(char data)
     // Echo
     putchar(data);
 
-    if (data == '\n')
+    // Handle \r\n sequence as an end of command (ignore \r and execute cmd at \n)
+    switch (data)
     {
-        ShellDispatchCmd(rxBuf);
-        rxBuf.clear();
+    // Backspace
+    case 127:
+    {
+        if (!rxBuf.empty())
+        {
+            rxBuf = rxBuf.substr(0, rxBuf.size() - 1);
+        }
+        break;
     }
-    else if (data != '\r')
+    case '\r':
     {
+        break;
+    }
+    case '\n':
+    {
+        if (!rxBuf.empty())
+        {
+            ShellDispatchCmd(rxBuf);
+            rxBuf.clear();
+        }
+        printf(SHELL_PROMPT);
+        break;
+    }
+    default:
+    {
+        // Accumulate rx data in other cases
         rxBuf += data;
+        break;
+    }
+    }
+}
+
+void ShellInit()
+{
+    if (!g_bShellInitialized)
+    {
+        g_bShellInitialized = true;
+        printf(SHELL_PROMPT);
     }
 }

@@ -1,5 +1,4 @@
-#ifndef _MEASURE_LIB_H_
-#define _MEASURE_LIB_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -169,5 +168,3 @@ void ANTHOR_MEASURE(void);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /*_MEASURE_LIB_H_*/

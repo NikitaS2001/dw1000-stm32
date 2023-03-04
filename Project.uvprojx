@@ -385,9 +385,9 @@
           <GroupName>at24</GroupName>
           <Files>
             <File>
-              <FileName>AT24C02.c</FileName>
+              <FileName>AT24C02.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>Source\device\at24c16\AT24C02.c</FilePath>
+              <FilePath>Source\device\at24c16\AT24C02.cpp</FilePath>
             </File>
             <File>
               <FileName>AT24C02.h</FileName>
@@ -475,9 +475,9 @@
           <GroupName>memory</GroupName>
           <Files>
             <File>
-              <FileName>flash.c</FileName>
+              <FileName>flash.cpp</FileName>
               <FileType>1</FileType>
-              <FilePath>.\Source\device\memory\flash.c</FilePath>
+              <FilePath>.\Source\device\memory\flash.cpp</FilePath>
             </File>
           </Files>
         </Group>
