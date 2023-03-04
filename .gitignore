@@ -1,6 +1,5 @@
 # Keil Generated output files in the sub-directories .\Listings and .\Objects
 *.lst
-*.o
 *.d
 *.crf
 *.lnp
