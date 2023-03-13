@@ -2,12 +2,8 @@
 
 #include <stm3210e_eval.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define SHELL_LOG(...) ShellPrintf(##__VA_ARGS__);
 
-void ShellInit(void);
+void ShellInit();
 
-#ifdef __cplusplus
-}
-#endif
+int ShellPrintf(const char* format, ...);

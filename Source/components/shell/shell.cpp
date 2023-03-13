@@ -4,10 +4,13 @@
 #include "memory/flash.h"
 
 #include <FreeRTOS.h>
+#include <assert.h>
+#include <semphr.h>
 
 #include <string>
 #include <vector>
 
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -34,6 +37,9 @@ void ShellRecv(char data);
 // Commands and print via shell interface are ignored if shell is not enabled
 // This allows use silent mode, when nothing is printed to and received from the console
 static bool g_bShellInitialized = false;
+
+// Shell mutex to prevent simultaneous print from different threads
+static xSemaphoreHandle s_shellSemaphore = NULL;
 
 #ifdef __cplusplus
 extern "C"
@@ -272,6 +278,32 @@ void ShellInit()
     if (!g_bShellInitialized)
     {
         g_bShellInitialized = true;
+        s_shellSemaphore = xSemaphoreCreateMutex();
+        assert(s_shellSemaphore != NULL);
+
         printf(SHELL_PROMPT);
     }
+}
+
+int ShellPrintf(const char* format, ...)
+{
+    if (!g_bShellInitialized)
+    {
+        return 0;
+    }
+
+    if (xSemaphoreTake(s_shellSemaphore, portMAX_DELAY) != pdTRUE)
+    {
+        printf("[Shell] Could not take semaphore on printf!!\r\n");
+        return 0;
+    }
+
+    va_list args;
+    va_start(args, format);
+    int len = printf(format, args);
+    va_end(args);
+
+    xSemaphoreGive(s_shellSemaphore);
+
+    return len;
 }

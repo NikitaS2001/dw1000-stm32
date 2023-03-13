@@ -226,7 +226,6 @@ extern "C" void Tag_Measure_Dis(void)
         else
         {
             /* Clear RX error events in the DW1000 status register. */
-            // sprintf(dist_str, "%08x",status_reg);
             dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_ERR);
         }
         /* Execute a delay between ranging exchanges. */
@@ -238,7 +237,7 @@ extern "C" void Tag_Measure_Dis(void)
 
 void MainTask(void* pvParameters)
 {
-    printf("Initializing DWM1000...\r\n");
+    SHELL_LOG("Initializing DWM1000...\r\n");
 
     /* Reset and initialise DW1000.
      * For initialisation, DW1000 clocks must be temporarily set to crystal speed. After initialisation SPI rate can be increased for optimum
@@ -251,7 +250,7 @@ void MainTask(void* pvParameters)
 
     if (dwt_initialise(DWT_LOADUCODE) == -1)
     {
-        printf("DWM1000 init is failed!\r\n");
+        SHELL_LOG("DWM1000 init is failed!\r\n");
 
         // Blink LED when init is failed
         while (1)
@@ -274,14 +273,14 @@ void MainTask(void* pvParameters)
     dwt_setrxantennadelay(RX_ANT_DLY);
     dwt_settxantennadelay(TX_ANT_DLY);
 
-    printf("Init pass!\r\n");
+    SHELL_LOG("Init pass!\r\n");
 
     SRuntimeConfig cfg = ConfigRead();
 
 #ifdef BEACON
 
-    printf("Device type: BEACON (anchor)\r\n");
-    printf("Device id: %d\r\n", cfg.deviceId);
+    SHELL_LOG("Device type: BEACON (anchor)\r\n");
+    SHELL_LOG("Device id: %d\r\n", cfg.deviceId);
 
     ANCHOR_IND = cfg.deviceId;
 
@@ -293,8 +292,8 @@ void MainTask(void* pvParameters)
 
 #else
 
-    printf("Device type: SENSOR (tag)\r\n");
-    printf("Device id: %d\r\n", cfg.deviceId);
+    SHELL_LOG("Device type: SENSOR (tag)\r\n");
+    SHELL_LOG("Device id: %d\r\n", cfg.deviceId);
 
     TAG_ID = cfg.deviceId;
     MASTER_TAG = TAG_ID;
@@ -398,7 +397,7 @@ static void distance_mange(void)
             beaconData.id = Anchor_Index;
             beaconData.dist = distMeters;
 
-            // printf("Got distance (id = %d): %3.2f meters\r\n", Anchor_Index, distMeters);
+            // SHELL_LOG("Got distance (id = %d): %3.2f meters\r\n", Anchor_Index, distMeters);
         }
     }
 
