@@ -13,6 +13,8 @@
 #include "deca_lib/deca_port.h"
 #include "deca_lib/deca_regs.h"
 
+#include "ros_lib/dwm1000_msgs/BeaconDataArray.h"
+
 #include <FreeRTOS.h>
 #include <task.h>
 #include <queue.h>
@@ -24,9 +26,8 @@
 #include <stdio.h>
 #include <string.h>
 
-uint8 SWITCH_DIS = 0;
+uint8 SWITCH_DIS = 1;
 
-extern char dist_str[16];
 extern uint8_t TAG_ID;
 extern uint8_t MASTER_TAG;
 extern uint8_t SLAVE_TAG_START_INDEX;
@@ -61,7 +62,7 @@ void Semaphore_Init(void)
     }
 }
 
-int Sum_Tag_Semaphore_request(void)
+extern "C" int Sum_Tag_Semaphore_request(void)
 {
     int tag_index = 0 ;
     int sum_request = 0;
@@ -72,10 +73,8 @@ int Sum_Tag_Semaphore_request(void)
     return sum_request;
 }
 
-void Tag_Measure_Dis(void)
+extern "C" void Tag_Measure_Dis(void)
 {
-    printf("Tag_Measure_Dis");
-
     uint8 dest_anthor = 0,frame_len = 0;
     frame_seq_nb=0;
 
@@ -237,7 +236,7 @@ void Tag_Measure_Dis(void)
 
 }
 
-void vMainTask(void *pvParameters)
+void MainTask(void* pvParameters)
 {
     printf("Initializing DWM1000...\r\n");
 
@@ -326,12 +325,24 @@ int main(void)
     ShellInit();
 
     xTaskCreate(
-        vMainTask,
+        MainTask,
         "MainTask",
         configMINIMAL_STACK_SIZE,
         NULL,
         tskIDLE_PRIORITY + 1,
         NULL);
+
+#ifndef BEACON
+
+    xTaskCreate(
+        CommTask,
+        "CommTask",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_PRIORITY + 1,
+        NULL);
+
+#endif
 
     vTaskStartScheduler();
 }
@@ -369,26 +380,29 @@ int filter(int input, int fliter_idx )
 
 static void distance_mange(void)
 {
+    dwm1000_msgs::BeaconDataArray::_beacons_type beaconDataArray[ANCHOR_MAX_NUM];
+    dwm1000_msgs::BeaconDataArray beaconDataPacket;
+    beaconDataPacket.beacons = beaconDataArray;
+    beaconDataPacket.beacons_length = 0;
+
+    for (int Anchor_Index = 0; Anchor_Index < ANCHOR_MAX_NUM; Anchor_Index++)
     {
-        int Anchor_Index = 0;
-        while(Anchor_Index < ANCHOR_MAX_NUM)
+        if(Anthordistance_count[Anchor_Index] > 0 )
         {
-            if(Anthordistance_count[Anchor_Index] > 0 )
-            {
-                Anthordistance[Anchor_Index] =filter((int)(Anthordistance[Anchor_Index]/Anthordistance_count[Anchor_Index]),Anchor_Index);
-            }
-            Anchor_Index++;
+            int distance = filter((int)(Anthordistance[Anchor_Index]/Anthordistance_count[Anchor_Index]),Anchor_Index);
+            Anthordistance[Anchor_Index] = distance;
+
+            float distMeters = (float)distance / 1000;
+
+            dwm1000_msgs::BeaconDataArray::_beacons_type& beaconData = beaconDataArray[beaconDataPacket.beacons_length++];
+            beaconData.id = Anchor_Index;
+            beaconData.dist = distMeters;
+
+            // printf("Got distance (id = %d): %3.2f meters\r\n", Anchor_Index, distMeters);
         }
     }
 
-    for(int j=0;j<ANCHOR_MAX_NUM;j++)
-    {
-        if(Anthordistance_count[j]>0)
-        {
-            sprintf(dist_str, "an%d:%3.2fm",j,(float)Anthordistance[j]/1000);
-            printf("%s\r\n",dist_str);
-        }
-    }
+    CommSendBeaconDataArray(&beaconDataPacket);
 }
 
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts)

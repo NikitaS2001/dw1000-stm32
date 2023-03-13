@@ -1,13 +1,15 @@
 #pragma once
 
 #ifdef __cplusplus
- extern "C" {
+extern "C" {
 #endif
 
-void CommInit(void);
+void CommTask(void* pvParameters);
 
-void loop(void);
+void CommSendBeaconDataArray(void* dataArray);
 
 #ifdef __cplusplus
 }
 #endif
+
+
