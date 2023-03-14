@@ -457,7 +457,7 @@ void reset_DW1000(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(DW1000_RSTn_GPIO, &GPIO_InitStructure);
 
-    vTaskDelay(2);
+    vTaskDelay(2 / portTICK_PERIOD_MS);
 }
 
 

@@ -1524,7 +1524,7 @@ uint32 _dwt_otpsetmrregs(int mode)
     dwt_writetodevice(OTP_IF_ID, OTP_CTRL,1,wr_buf);
 
     // Wait?
-    vTaskDelay(10);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
     // Set Clear Mode sel
     wr_buf[0] = 0x00;
     dwt_writetodevice(OTP_IF_ID,OTP_CTRL+1,1,wr_buf);
@@ -1538,7 +1538,7 @@ uint32 _dwt_otpsetmrregs(int mode)
     // MRB_SEL
     wr_buf[0] = 0x04;
     dwt_writetodevice(OTP_IF_ID,OTP_CTRL+1,1,wr_buf);
-    vTaskDelay(100);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
 
     // Clear mode sel
     wr_buf[0] = 0x00;
@@ -1547,7 +1547,7 @@ uint32 _dwt_otpsetmrregs(int mode)
     wr_buf[0] = 0x00;
     dwt_writetodevice(OTP_IF_ID, OTP_CTRL,1,wr_buf);
 
-    vTaskDelay(10);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
 
     if (((mode&0x0f) == 0x1)||((mode&0x0f) == 0x2))
 	{
@@ -1609,7 +1609,7 @@ uint32 _dwt_otpprogword32(uint32 data, uint16 address)
     otp_done = 0;
     while(otp_done == 0)
     {
-        vTaskDelay(1);
+        vTaskDelay(1 / portTICK_PERIOD_MS);
         dwt_readfromdevice(OTP_IF_ID, OTP_STAT, 1, rd_buf);
 
         if((rd_buf[0] & 0x01) == 0x01)
@@ -1814,7 +1814,7 @@ uint16 dwt_calibratesleepcnt(void)
 
     buf[0] = 0x01;
     dwt_writetodevice(PMSC_ID,PMSC_CTRL0_OFFSET,1,buf);
-    vTaskDelay(1);
+    vTaskDelay(1 / portTICK_PERIOD_MS);
 
     // Read the number of XTAL/2 cycles one lposc cycle took.
     // Set up address
@@ -1971,7 +1971,7 @@ int dwt_spicswakeup(uint8 *buff, uint16 length)
 
         // Need 5ms for XTAL to start and stabilise (could wait for PLL lock IRQ status bit !!!)
         // NOTE: Polling of the STATUS register is not possible unless frequency is < 3MHz
-        vTaskDelay(5);
+        vTaskDelay(5 / portTICK_PERIOD_MS);
     }
     else
     {
@@ -2037,7 +2037,7 @@ void _dwt_loaducodefromrom(void)
     // Kick off the LDE load
     dwt_write16bitoffsetreg(OTP_IF_ID, OTP_CTRL, OTP_CTRL_LDELOAD); // Set load LDE kick bit
 
-    vTaskDelay(1); // Allow time for code to upload (should take up to 120 us)
+    vTaskDelay(1 / portTICK_PERIOD_MS); // Allow time for code to upload (should take up to 120 us)
 
     // Default clocks (ENABLE_ALL_SEQ)
     _dwt_enableclocks(ENABLE_ALL_SEQ); // Enable clocks for sequencing
@@ -3197,7 +3197,7 @@ void dwt_softreset(void)
 
     // DW1000 needs a 10us sleep to let clk PLL lock after reset - the PLL will automatically lock after the reset
     // Could also have polled the PLL lock flag, but then the SPI needs to be < 3MHz !! So a simple delay is easier
-    vTaskDelay(1);
+    vTaskDelay(1 / portTICK_PERIOD_MS);
 
     temp[0] |= 0xF0;
     dwt_writetodevice(PMSC_ID, 0x3, 1, &temp[0]) ;
@@ -3387,7 +3387,7 @@ uint16 dwt_readtempvbat(uint8 fastSPI)
 
     if(fastSPI == 1)
     {
-        vTaskDelay(1); // If using PLL clocks(and fast SPI rate) then this sleep is needed
+        vTaskDelay(1 / portTICK_PERIOD_MS); // If using PLL clocks(and fast SPI rate) then this sleep is needed
         // Read voltage and temperature.
         dwt_readfromdevice(TX_CAL_ID, TC_SARL_SAR_LVBAT_OFFSET,2,wr_buf);
     }

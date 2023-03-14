@@ -1,12 +1,12 @@
-#ifndef _ROS_dwm1000_msgs_BeaconData_h
-#define _ROS_dwm1000_msgs_BeaconData_h
+#ifndef _ROS_dwm1000_BeaconData_h
+#define _ROS_dwm1000_BeaconData_h
 
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
 #include "ros/msg.h"
 
-namespace dwm1000_msgs
+namespace dwm1000
 {
 
   class BeaconData : public ros::Msg
@@ -54,7 +54,7 @@ namespace dwm1000_msgs
      return offset;
     }
 
-    const char * getType() { return "dwm1000_msgs/BeaconData"; };
+    const char * getType() { return "dwm1000/BeaconData"; };
     const char * getMD5() { return "d3e001865357c64492a9fc52f215ca3a"; };
 
   };

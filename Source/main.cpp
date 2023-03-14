@@ -13,7 +13,7 @@
 #include "deca_lib/deca_port.h"
 #include "deca_lib/deca_regs.h"
 
-#include "ros_lib/dwm1000_msgs/BeaconDataArray.h"
+#include "ros_lib/dwm1000/BeaconDataArray.h"
 
 #include <FreeRTOS.h>
 #include <task.h>
@@ -25,6 +25,8 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+
+#include <vector>
 
 uint8 SWITCH_DIS = 1;
 
@@ -229,7 +231,7 @@ extern "C" void Tag_Measure_Dis(void)
             dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_ERR);
         }
         /* Execute a delay between ranging exchanges. */
-        // vTaskDelay(RNG_DELAY_MS);
+        // vTaskDelay(RNG_DELAY_MS / portTICK_PERIOD_MS);
         frame_seq_nb++;
     }
 
@@ -256,10 +258,10 @@ void MainTask(void* pvParameters)
         while (1)
         {
             GPIO_SetBits(GPIOC, GPIO_Pin_13);
-            vTaskDelay(1000);
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
 
             GPIO_ResetBits(GPIOC, GPIO_Pin_13);
-            vTaskDelay(1000);
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
         }
     }
 
@@ -379,10 +381,7 @@ int filter(int input, int fliter_idx )
 
 static void distance_mange(void)
 {
-    dwm1000_msgs::BeaconDataArray::_beacons_type beaconDataArray[ANCHOR_MAX_NUM];
-    dwm1000_msgs::BeaconDataArray beaconDataPacket;
-    beaconDataPacket.beacons = beaconDataArray;
-    beaconDataPacket.beacons_length = 0;
+    std::vector<dwm1000::BeaconData> beaconDataArray;
 
     for (int Anchor_Index = 0; Anchor_Index < ANCHOR_MAX_NUM; Anchor_Index++)
     {
@@ -393,15 +392,16 @@ static void distance_mange(void)
 
             float distMeters = (float)distance / 1000;
 
-            dwm1000_msgs::BeaconDataArray::_beacons_type& beaconData = beaconDataArray[beaconDataPacket.beacons_length++];
+            dwm1000::BeaconData beaconData;
             beaconData.id = Anchor_Index;
             beaconData.dist = distMeters;
 
+            beaconDataArray.push_back(beaconData);
             // SHELL_LOG("Got distance (id = %d): %3.2f meters\r\n", Anchor_Index, distMeters);
         }
     }
 
-    CommSendBeaconDataArray(&beaconDataPacket);
+    CommSendBeaconDataArray(beaconDataArray);
 }
 
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts)

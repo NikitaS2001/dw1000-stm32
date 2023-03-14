@@ -22,20 +22,19 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdbool.h>
-#include <stdint.h>
+#include "utils/std/concurrent_queue.h"
+
 extern "C"
 {
   #include <stm32f10x.h>
   #include <stm32f10x_usart.h>
-  #include "ringbuf.h"
 }
 
-// UART buffer structures
-tRingBufObject rxBuffer;
-tRingBufObject txBuffer;
-uint8_t ui8rxBufferData[RX_BUFFER_SIZE];
-uint8_t ui8txBufferData[TX_BUFFER_SIZE];
+#include <stdbool.h>
+#include <stdint.h>
+
+std::concurrent_queue<uint8_t> rxQueue;
+std::concurrent_queue<uint8_t> txQueue;
 
 extern "C"
 {
@@ -45,21 +44,19 @@ extern "C"
 // For each transmitted byte, read the next available from the buffer.
 void USART2_IRQHandler()
 {
-  // TX the next available char on the buffer
-  if (USART_GetITStatus(USART2, USART_IT_TC))
-  {
-    USART_ClearITPendingBit(USART2, USART_IT_TC);
-    if (RingBufUsed(&txBuffer))
-      USART_SendData(USART2, (uint8_t)RingBufReadOne(&txBuffer));
-  }
-
-  // RX and copy the data to buffer
-  if (USART_GetITStatus(USART2, USART_IT_RXNE))
-  {
-    if (!RingBufFull(&rxBuffer))
+    // TX the next available char on the buffer
+    if (USART_GetITStatus(USART2, USART_IT_TC))
     {
-      RingBufWriteOne(&rxBuffer, (uint8_t)USART_ReceiveData(USART2));
+        USART_ClearITPendingBit(USART2, USART_IT_TC);
+        if (txQueue.size() > 0)
+            USART_SendData(USART2, txQueue.pop());
     }
-  }
+
+    // RX and copy the data to buffer
+    if (USART_GetITStatus(USART2, USART_IT_RXNE))
+    {
+        rxQueue.push((uint8_t)USART_ReceiveData(USART2));
+    }
 }
+
 }

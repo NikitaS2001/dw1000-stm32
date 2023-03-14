@@ -2,7 +2,7 @@
 
 #include "shell/shell.h"
 
-#include "ros_lib/dwm1000_msgs/BeaconDataArray.h"
+#include "ros_lib/dwm1000/BeaconDataArray.h"
 #include "ros_lib/ros.h"
 #include "ros_lib/std_msgs/String.h"
 
@@ -13,15 +13,13 @@
 
 #include <stdio.h>
 
-static xSemaphoreHandle s_rosSemaphore = NULL;
+xSemaphoreHandle s_rosSemaphore = NULL;
 
 ros::NodeHandle s_rosNodeHandle;
-dwm1000_msgs::BeaconDataArray s_beaconDataMsg;
+dwm1000::BeaconDataArray s_beaconDataMsg;
 ros::Publisher s_distPub("dwm1000/beacon_data", &s_beaconDataMsg);
 
-std_msgs::String str_msg;
-ros::Publisher chatter("chatter", &str_msg);
-char hello[] = "Hello world!";
+std::vector<dwm1000::BeaconData> s_pendingBeaconData;
 
 void CommTask(void* pvParameters)
 {
@@ -33,8 +31,7 @@ void CommTask(void* pvParameters)
     assert(xSemaphoreTake(s_rosSemaphore, portMAX_DELAY) == pdTRUE);
 
     s_rosNodeHandle.initNode();
-    //s_rosNodeHandle.advertise(s_distPub);
-    s_rosNodeHandle.advertise(chatter);
+    s_rosNodeHandle.advertise(s_distPub);
 
     SHELL_LOG("[ROS] Entering communication loop\r\n");
 
@@ -42,34 +39,33 @@ void CommTask(void* pvParameters)
 
     while (true)
     {
-        if (xSemaphoreTake(s_rosSemaphore, portMAX_DELAY) != pdTRUE)
-        {
-            SHELL_LOG("[ROS] Could not take semaphore in comm loop!!\r\n");
-            continue;
-        }
-
-        str_msg.data = hello;
-        chatter.publish(&str_msg);
+        assert(xSemaphoreTake(s_rosSemaphore, portMAX_DELAY) == pdTRUE);
 
         s_rosNodeHandle.spinOnce();
 
+        /*if (s_pendingBeaconData.size() > 0)
+        {
+            dwm1000::BeaconDataArray beaconDataArray;
+            beaconDataArray.beacons = &s_pendingBeaconData[0];
+            beaconDataArray.beacons_length = s_pendingBeaconData.size();
+            s_distPub.publish(&beaconDataArray);
+
+            s_pendingBeaconData.clear();
+        }*/
+
         xSemaphoreGive(s_rosSemaphore);
 
-        vTaskDelay(1000);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
     vTaskDelete(NULL);
 }
 
-void CommSendBeaconDataArray(void* dataArray)
+void CommSendBeaconDataArray(const std::vector<dwm1000::BeaconData>& beaconDataArray)
 {
-    if (xSemaphoreTake(s_rosSemaphore, portMAX_DELAY) != pdTRUE)
-    {
-        SHELL_LOG("[ROS] Could not take semaphore while sending beacon data!!\r\n");
-        return;
-    }
+    //assert(xSemaphoreTake(s_rosSemaphore, portMAX_DELAY) == pdTRUE);
 
-    // s_distPub.publish((dwm1000_msgs::BeaconDataArray*)dataArray);
+    //s_pendingBeaconData = beaconDataArray;
 
-    xSemaphoreGive(s_rosSemaphore);
+    //xSemaphoreGive(s_rosSemaphore);
 }

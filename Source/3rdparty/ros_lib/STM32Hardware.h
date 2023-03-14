@@ -1,59 +1,27 @@
-/*
-* Copyright (c) 2016, Robosavvy Ltd.
-* All rights reserved.
-* Author: Vitor Matos
-*
-* Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
-* following conditions are met:
-*
-*   1. Redistributions of source code must retain the above copyright notice, this list of conditions and the
-* following disclaimer.
-*   2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
-* following disclaimer in the documentation and/or other materials provided with the distribution.
-*   3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote
-* products derived from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
-* WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-* PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-* GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-* LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-* OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+#pragma once
 
-//*****************************************************************************
-//
-// Bare minimum hardware resources allocated for rosserials communication.
-// * One UART port, interrupt driven transfers
-// * Two RingBuffers of TX_BUFFER_SIZE and RX_BUFFER_SIZE
-// * Systick Interrupt handler
-//
-//*****************************************************************************
+#include "utils/std/concurrent_queue.h"
 
-#ifndef STM32_HARDWARE_H
-#define STM32_HARDWARE_H
-
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
 extern "C"
 {
     #include <stm32_eval.h>
     #include <stm32f10x.h>
     #include <stm32f10x_usart.h>
-    #include "deca_port.h"
-    #include "ringbuf.h"
 }
+
+#include <FreeRTOS.h>
+#include <task.h>
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
 
 #ifndef ROSSERIAL_BAUDRATE
 #define ROSSERIAL_BAUDRATE 57600
 #endif
 
-extern tRingBufObject rxBuffer;
-extern tRingBufObject txBuffer;
-extern uint8_t ui8rxBufferData[RX_BUFFER_SIZE];
-extern uint8_t ui8txBufferData[TX_BUFFER_SIZE];
+extern std::concurrent_queue<uint8_t> rxQueue;
+extern std::concurrent_queue<uint8_t> txQueue;
 
 class STM32Hardware
 {
@@ -82,19 +50,15 @@ public:
         NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
         NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-        NVIC_Init(&NVIC_InitStructure); 
-
-        // Initialize UART buffers.
-        RingBufInit(&rxBuffer, ui8rxBufferData, RX_BUFFER_SIZE);
-        RingBufInit(&txBuffer, ui8txBufferData, TX_BUFFER_SIZE);
+        NVIC_Init(&NVIC_InitStructure);
     }
 
     // read a byte from the serial port. -1 = failure
     int read()
     {
-        if (RingBufUsed(&rxBuffer))
+        if (rxQueue.size() > 0)
         {
-            return RingBufReadOne(&rxBuffer);
+            return rxQueue.pop();
         }
         else
         {
@@ -105,34 +69,23 @@ public:
     // write data to the connection to ROS
     void write(uint8_t* data, int length)
     {
-        printf("STM32Hardware write:\r\n");
-        for (size_t i = 0; i < length; ++i)
+        const bool bTxBufWasEmpty = txQueue.size() == 0;
+        for (int i = 0; i < length; ++i)
         {
-            printf("%02X ", data[i]);
-            if ((i + 1) % 8 == 0)
-            {
-                printf("\r\n");
-            }
+            txQueue.push(data[i]);
         }
-        if (length % 8 != 0)
-        {
-            printf("\r\n");
-        }
-
-        const bool bRingBufWasEmpty = RingBufEmpty(&txBuffer);
-        RingBufWrite(&txBuffer, data, length);
 
         // Trigger sending buffer if not already sending
-        if(bRingBufWasEmpty)
+        if(bTxBufWasEmpty)
         {
-            USART_SendData(USART2, (uint8_t)RingBufReadOne(&txBuffer));
+            USART_SendData(USART2, txQueue.pop());
         }
     }
 
     // returns milliseconds since start of program
     uint32_t time()
     {
-        return portGetTickCount();
+        return xTaskGetTickCount();
     }
 
     // System frequency
@@ -141,5 +94,3 @@ public:
         return SystemCoreClock;
     }
 };
-
-#endif  // STM32_HARDWARE_H
