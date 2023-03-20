@@ -22,32 +22,33 @@ public:
 
     T pop()
     {
-        xSemaphoreTake(mutex_, portMAX_DELAY);
+        // TODO: fix deadlock when take mutex in UART thread
+        //xSemaphoreTake(mutex_, portMAX_DELAY);
 
         T item = queue_.front();
         queue_.pop();
 
-        xSemaphoreGive(mutex_);
+        //xSemaphoreGive(mutex_);
 
         return item;
     }
 
     void push(const T& item)
     {
-        xSemaphoreTake(mutex_, portMAX_DELAY);
+        //xSemaphoreTake(mutex_, portMAX_DELAY);
 
         queue_.push(item);
 
-        xSemaphoreGive(mutex_);
+        //xSemaphoreGive(mutex_);
     }
 
     size_t size()
     {
-        xSemaphoreTake(mutex_, portMAX_DELAY);
+        //xSemaphoreTake(mutex_, portMAX_DELAY);
 
         size_t res = queue_.size();
 
-        xSemaphoreGive(mutex_);
+        //xSemaphoreGive(mutex_);
 
         return res;
     }

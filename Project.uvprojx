@@ -420,11 +420,6 @@
               <FilePath>.\Source\3rdparty\ros_lib\duration.cpp</FilePath>
             </File>
             <File>
-              <FileName>ringbuf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\3rdparty\ros_lib\ringbuf.c</FilePath>
-            </File>
-            <File>
               <FileName>STM32Hardware.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Source\3rdparty\ros_lib\STM32Hardware.cpp</FilePath>
@@ -1686,11 +1681,6 @@
               <FileName>duration.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Source\3rdparty\ros_lib\duration.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>ringbuf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\3rdparty\ros_lib\ringbuf.c</FilePath>
             </File>
             <File>
               <FileName>STM32Hardware.cpp</FileName>
