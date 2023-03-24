@@ -50,7 +50,7 @@ namespace dwm1000
      return offset;
     }
 
-    const char * getType() { return "dwm1000/BeaconDataArray"; };
+    const char * getType() { return "dwm1000_msgs/BeaconDataArray"; };
     const char * getMD5() { return "8773c386b9957fd17c8b97c17eb896e5"; };
 
   };

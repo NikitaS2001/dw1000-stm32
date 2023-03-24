@@ -277,6 +277,7 @@ void MainTask(void* pvParameters)
 
     SHELL_LOG("Init pass!\r\n");
 
+    // FIXME: device IDs are not printed properly in shell
     SRuntimeConfig cfg = ConfigRead();
 
 #ifdef BEACON
