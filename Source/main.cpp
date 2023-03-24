@@ -403,13 +403,3 @@ static void distance_mange(void)
 
     CommSendBeaconDataArray(beaconDataArray);
 }
-
-static void final_msg_set_ts(uint8 *ts_field, uint64 ts)
-{
-    int i;
-    for (i = 0; i < FINAL_MSG_TS_LEN; i++)
-    {
-        ts_field[i] = (uint8) ts;
-        ts >>= 8;
-    }
-}
