@@ -1,3 +1,8 @@
+/**
+ * DECOMPILED FROM DWM LIB (dwm1000.o) 
+ * DON'T COMPILE
+ */
+
 #include "dwm1000.h"
 
 #define LOWORD(l)           ((WORD)(((DWORD_PTR)(l)) & 0xffff))
@@ -55,16 +60,6 @@ static void final_msg_get_ts(const uint8* ts_field, uint32* ts)
     }
 }
 
-static void final_msg_set_ts(uint8* ts_field, uint64 ts)
-{
-    int i;
-    for (i = 0; i < FINAL_MSG_TS_LEN; i++)
-    {
-        ts_field[i] = (uint8) ts;
-        ts >>= 8;
-    }
-}
-
 void TAG_MEASURE(void)
 {
     int i; // r6
@@ -113,7 +108,7 @@ void TAG_MEASURE(void)
                 tick = portGetTickCnt(v5);
                 while ( 1 )
                 {
-                    v7 = dwt_read32bitoffsetreg(15, 0) << 24;
+                    v7 = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0) << 24;
                     if ( v7 < 0 )
                         break;
                     v6 = (int32)(portGetTickCnt(v7) - tick) > 0xC8;
@@ -140,7 +135,7 @@ LABEL_61:
                     tick = portGetTickCnt(v8);
                     while ( 1 )
                     {
-                        v10 = dwt_read32bitoffsetreg(15, 0);
+                        v10 = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
                         status_reg = v10;
                         if ( (v10 & 0x2427D000) != 0 )
                             break;
@@ -151,8 +146,8 @@ LABEL_61:
                     }
                     if ( (status_reg & 0x4000) != 0 )
                     {
-                        dwt_write32bitoffsetreg(15, 0, 16512);
-                        v11 = dwt_read32bitoffsetreg(16, 0) & 0x7F;
+                        dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
+                        v11 = dwt_read32bitoffsetreg(RX_FINFO_ID, 0) & 0x7F;
                         if ( v11 <= 0x18 )
                             dwt_readrxdata(&rx_buffer, v11, 0);
                         byte_794 = 0;
@@ -170,7 +165,7 @@ LABEL_61:
                     }
                     else
                     {
-                        dwt_write32bitoffsetreg(15, 0, 606572544);
+                        dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 606572544);
                     }
                 }
                 for ( i = (uint8)SLAVE_TAG_START_INDEX; !i; i = 1 ) {};
@@ -194,13 +189,13 @@ LABEL_61:
                         dwt_writetxfctrl(13, 0);
                         dwt_starttx(2);
                         do
-                        status_reg = dwt_read32bitoffsetreg(15, 0);
+                        status_reg = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
                         while ( (status_reg & 0x2427D000) == 0 );
                         if ( (status_reg & 0x4000) != 0 )
                         {
                             GPIO_SetBits(1073809408, 2);
-                            dwt_write32bitoffsetreg(15, 0, 16512);
-                            v15 = dwt_read32bitoffsetreg(16, 0) & 0x7F;
+                            dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
+                            v15 = dwt_read32bitoffsetreg(RX_FINFO_ID, 0) & 0x7F;
                             if ( v15 <= 0x18 )
                                 dwt_readrxdata(&rx_buffer, v15, 0);
                             v14 = (int)&rx_buffer;
@@ -217,12 +212,12 @@ LABEL_42:
                                     dwt_setrxtimeout(13500);
                                     dwt_rxenable(0);
                                     do
-                                        status_reg = dwt_read32bitoffsetreg(15, 0);
+                                        status_reg = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
                                     while ( (status_reg & 0x2427D000) == 0 );
                                     if ( (status_reg & 0x4000) != 0 )
                                     {
-                                        dwt_write32bitoffsetreg(15, 0, 0x4000);
-                                        v16 = (char)dwt_read32bitoffsetreg(16, 0);
+                                        dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 0x4000);
+                                        v16 = (char)dwt_read32bitoffsetreg(RX_FINFO_ID, 0);
                                         dwt_readrxdata(&rx_buffer, v16, 0);
                                         byte_794 = 0;
                                         v17 = (uint8)byte_795;
@@ -243,7 +238,7 @@ LABEL_42:
                                     {
                                         v2 = (uint8)(v2 - 1);
                                         Semaphore[i] = 0;
-                                        v14 = dwt_write32bitoffsetreg(15, 0, 606572544);
+                                        v14 = dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 606572544);
                                     }
                                     break;
                                 }
@@ -252,7 +247,7 @@ LABEL_42:
                         else
                         {
                             Semaphore[0] = 0;
-                            v14 = dwt_write32bitoffsetreg(15, 0, 606572544);
+                            v14 = dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 606572544);
                         }
                     }
                 }
@@ -270,7 +265,7 @@ LABEL_42:
             tick = portGetTickCnt(v18);
             while ( 1 )
             {
-                v19 = dwt_read32bitoffsetreg(15, 0);
+                v19 = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
                 status_reg = v19;
                 if ( (v19 & 0x2427D000) != 0 )
                     break;
@@ -279,8 +274,8 @@ LABEL_42:
             }
             if ( (status_reg & 0x4000) != 0 )
             {
-                dwt_write32bitoffsetreg(15, 0, 16512);
-                v20 = (char)dwt_read32bitoffsetreg(16, 0);
+                dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
+                v20 = (char)dwt_read32bitoffsetreg(RX_FINFO_ID, 0);
                 dwt_readrxdata(&rx_buffer, v20, 0);
                 byte_794 = 0;
                 if ( byte_795 == TAG_ID )
@@ -300,7 +295,7 @@ LABEL_42:
                         dwt_writetxdata(13, &Master_Release_Semaphore_comfirm, 0);
                         dwt_writetxfctrl(13, 0);
                         dwt_starttx(0);
-                        while ( (dwt_read32bitoffsetreg(15, 0) & 0x80) == 0 )
+                        while ( (dwt_read32bitoffsetreg(SYS_STATUS_ID, 0) & 0x80) == 0 )
                         ;
                         v1 = 1;
                         GPIO_SetBits(1073809408, 2);
@@ -309,7 +304,7 @@ LABEL_42:
             }
             else
             {
-                dwt_write32bitoffsetreg(15, 0, 606572544);
+                dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 606572544);
             }
         }
     }
@@ -347,17 +342,17 @@ void ANTHOR_MEASURE(void)
         dwt_setrxtimeout(0);
         dwt_rxenable(0);
         do
-            status_reg = dwt_read32bitoffsetreg(15, 0);
+            status_reg = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
         while ( (status_reg & 0x2427D000) == 0 );
-        v0 = (status_reg & 0x4000) != 0;
+        v0 = (status_reg & SYS_STATUS_RXFCG) != 0;
 LABEL_4:
         if ( !v0 )
         {
-            dwt_write32bitoffsetreg(15, 0, 606572544);
+            dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 606572544);
             continue;
         }
-            dwt_write32bitoffsetreg(15, 0, 16512);
-            v1 = (char)dwt_read32bitoffsetreg(16, 0);
+            dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
+            v1 = (char)dwt_read32bitoffsetreg(RX_FINFO_ID, 0);
             dwt_readrxdata(&rx_buffer, v1, 0);
         if ( (uint8)byte_794 % 0x2Du != ANCHOR_IND )
             continue;
@@ -376,13 +371,13 @@ LABEL_4:
             dwt_writetxfctrl(15, 0);
             dwt_starttx(2);
             do
-                status_reg = dwt_read32bitoffsetreg(15, 0);
+                status_reg = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
             while ( (status_reg & 0x2427D000) == 0 );
             v0 = (status_reg & 0x4000) != 0;
             if ( (status_reg & 0x4000) == 0 )
                 goto LABEL_4;
-            dwt_write32bitoffsetreg(15, 0, 16512);
-            v3 = dwt_read32bitoffsetreg(16, 0) & 0x7F;
+            dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
+            v3 = dwt_read32bitoffsetreg(RX_FINFO_ID, 0) & 0x7F;
             if ( v3 <= 0x18 )
                 dwt_readrxdata(&rx_buffer, v3, 0);
             byte_794 = 0;

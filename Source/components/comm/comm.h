@@ -5,4 +5,4 @@
 
 void CommTask(void* pvParameters);
 
-void CommSendBeaconDataArray(const std::vector<dwm1000::BeaconData>& beaconDataArray);
+void CommSendBeaconData(const dwm1000::BeaconData& beaconData);

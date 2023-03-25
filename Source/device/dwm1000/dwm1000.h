@@ -5,8 +5,6 @@ extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "kalman/kalman.h"
-
 #include "at24c16/AT24C02.h"
 
 #include "deca_lib/deca_device_api.h"
@@ -139,30 +137,18 @@ uint64 get_rx_timestamp_u64(void);
 static void final_msg_get_ts(const uint8 *ts_field, uint32 *ts);
 static void final_msg_set_ts(uint8 *ts_field, uint64 ts);
 static void compute_angle_send_to_anthor0(int distance1, int distance2, int distance3);
-static void distance_mange(void);
 void USART_puts(uint8_t *s,uint8_t len);
 
-
-//#define TAG
-//uint8_t TAG_ID=0x01;
-//uint8_t MASTER_TAG=0x01;
-
 #define MAX_SLAVE_TAG 0x1
-//uint8_t SLAVE_TAG_START_INDEX=0x01;
-
-
-//#define ANTHOR
 #define ANCHOR_MAX_NUM 45
-//uint8_t ANCHOR_IND=0 ;
 
-//#define ANCHOR_IND ANCHOR_NUM
-
-
+// Enable flag
 extern uint8 SWITCH_DIS;
 
-
+// Tag work loop
 void TAG_MEASURE(void);
 
+// Anchor work loop
 void ANTHOR_MEASURE(void);
 
 #ifdef __cplusplus

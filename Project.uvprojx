@@ -507,26 +507,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>utils</GroupName>
-          <Files>
-            <File>
-              <FileName>kalman.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\utils\kalman\kalman.c</FilePath>
-            </File>
-            <File>
-              <FileName>matrix.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\utils\math\matrix.c</FilePath>
-            </File>
-            <File>
-              <FileName>vector.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\utils\math\vector.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>StdPeriph_Driver</GroupName>
           <Files>
             <File>
@@ -1766,26 +1746,6 @@
               <FileName>semihost.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Source\retarget\semihost.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>utils</GroupName>
-          <Files>
-            <File>
-              <FileName>kalman.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source\utils\kalman\kalman.c</FilePath>
-            </File>
-            <File>
-              <FileName>matrix.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\utils\math\matrix.c</FilePath>
-            </File>
-            <File>
-              <FileName>vector.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\Source\utils\math\vector.c</FilePath>
             </File>
           </Files>
         </Group>

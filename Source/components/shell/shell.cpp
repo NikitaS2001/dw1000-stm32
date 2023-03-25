@@ -298,6 +298,7 @@ int ShellPrintf(const char* format, ...)
         return 0;
     }
 
+    // FIXME: args are not printed properly (format is the first arg)
     va_list args;
     va_start(args, format);
     int len = printf(format, args);

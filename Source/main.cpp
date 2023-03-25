@@ -1,8 +1,6 @@
 #include "comm/comm.h"
 
 #include "config/config.h"
-#include "kalman/kalman.h"
-#include "math/vector.h"
 #include "shell/shell.h"
 
 #include "at24c16/AT24C02.h"
@@ -34,26 +32,7 @@ extern uint8_t TAG_ID;
 extern uint8_t MASTER_TAG;
 extern uint8_t SLAVE_TAG_START_INDEX;
 extern uint8_t ANCHOR_IND; 
-extern uint8_t ANCHOR_IND; 
 extern uint8 Semaphore[MAX_SLAVE_TAG];
-
-vec3d tag_best_solution;
-int Anthordistance[ANCHOR_MAX_NUM];
-
-int Anthordistance_count[ANCHOR_MAX_NUM];
-
-int ANCHOR_REFRESH_COUNT_set=5;
-#define ANCHOR_REFRESH_COUNT ANCHOR_REFRESH_COUNT_set
-
-void Anchor_Array_Init(void)
-{
-    int anchor_index = 0;
-    for(anchor_index = 0; anchor_index < ANCHOR_MAX_NUM; anchor_index++)
-    {
-        Anthordistance[anchor_index] = 0;
-        Anthordistance_count[anchor_index] = 0;
-    }
-}
 
 void Semaphore_Init(void)
 {
@@ -193,29 +172,15 @@ extern "C" void Tag_Measure_Dis(void)
 
                     if (memcmp(rx_buffer, distance_msg, ALL_MSG_COMMON_LEN) == 0)
                     {
-                        Anthordistance[rx_buffer[12]] +=(rx_buffer[10]*1000 + rx_buffer[11]*10);
-                        Anthordistance_count[rx_buffer[12]] ++;
-                        {
-                            int Anchor_Index = 0;
-                            while(Anchor_Index < ANCHOR_MAX_NUM)
-                            {
-                                if(Anthordistance_count[Anchor_Index] >=ANCHOR_REFRESH_COUNT )
-                                {
-                                    distance_mange();
-                                    Anchor_Index = 0;
+                        int32 anchorId = rx_buffer[12];
+                        int32 anchorDist = (rx_buffer[10]*1000 + rx_buffer[11]*10);
+                        float distMeters = (float)anchorDist / 1000;
 
-                                    //clear all
-                                    while(Anchor_Index < ANCHOR_MAX_NUM)
-                                    {
-                                        Anthordistance_count[Anchor_Index] = 0;
-                                        Anthordistance[Anchor_Index] = 0;
-                                        Anchor_Index++;
-                                    }
-                                    break;
-                                }
-                                Anchor_Index++;
-                            }
-                        }
+                        dwm1000::BeaconData beaconData;
+                        beaconData.id = anchorId;
+                        beaconData.dist = distMeters;
+
+                        CommSendBeaconData(beaconData);
                     }
                 }
                 else
@@ -277,7 +242,6 @@ void MainTask(void* pvParameters)
 
     SHELL_LOG("Init pass!\r\n");
 
-    // FIXME: device IDs are not printed properly in shell
     SRuntimeConfig cfg = ConfigRead();
 
 #ifdef BEACON
@@ -286,8 +250,6 @@ void MainTask(void* pvParameters)
     SHELL_LOG("Device id: %d\r\n", cfg.deviceId);
 
     ANCHOR_IND = cfg.deviceId;
-
-    Anchor_Array_Init();
 
     /* Loop forever initiating ranging exchanges. */
     //KalMan_PramInit();
@@ -349,58 +311,12 @@ int main(void)
     vTaskStartScheduler();
 }
 
-#define Filter_N 5  //max filter use in this system
-const int Filter_D_set=5;
-#define Filter_D Filter_D_set  //each filter contain "Filter_D" data
-int Value_Buf[Filter_N][Filter_D]= {0};
-int filter_index[Filter_N] = {0};
-int filter(int input, int fliter_idx )
+static void final_msg_set_ts(uint8* ts_field, uint64 ts)
 {
-    char count = 0;
-    int sum = 0;
-    if(input > 0)
+    int i;
+    for (i = 0; i < FINAL_MSG_TS_LEN; i++)
     {
-        Value_Buf[fliter_idx][filter_index[fliter_idx]++]=input;
-        if(filter_index[fliter_idx] == Filter_D) filter_index[fliter_idx] = 0;
-
-        for(count = 0; count<Filter_D; count++)
-        {
-            sum += Value_Buf[fliter_idx][count];
-        }
-        return (int)(sum/Filter_D);
+        ts_field[i] = (uint8) ts;
+        ts >>= 8;
     }
-    else
-    {
-        for(count = 0; count<Filter_D; count++)
-        {
-            sum += Value_Buf[fliter_idx][count];
-        }
-        return (int)(sum/Filter_D);
-    }
-
-}
-
-static void distance_mange(void)
-{
-    std::vector<dwm1000::BeaconData> beaconDataArray;
-
-    for (int Anchor_Index = 0; Anchor_Index < ANCHOR_MAX_NUM; Anchor_Index++)
-    {
-        if(Anthordistance_count[Anchor_Index] > 0 )
-        {
-            int distance = filter((int)(Anthordistance[Anchor_Index]/Anthordistance_count[Anchor_Index]),Anchor_Index);
-            Anthordistance[Anchor_Index] = distance;
-
-            float distMeters = (float)distance / 1000;
-
-            dwm1000::BeaconData beaconData;
-            beaconData.id = Anchor_Index;
-            beaconData.dist = distMeters;
-
-            beaconDataArray.push_back(beaconData);
-            // SHELL_LOG("Got distance (id = %d): %3.2f meters\r\n", Anchor_Index, distMeters);
-        }
-    }
-
-    CommSendBeaconDataArray(beaconDataArray);
 }

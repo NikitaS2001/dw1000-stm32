@@ -50,22 +50,36 @@ void CommTask(void* pvParameters)
             beaconDataArray.beacons_length = s_pendingBeaconData.size();
             s_distPub.publish(&beaconDataArray);
 
-            s_pendingBeaconData.clear();
+            // s_pendingBeaconData.clear();
         }
 
         xSemaphoreGive(s_rosSemaphore);
 
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 
     vTaskDelete(NULL);
 }
 
-void CommSendBeaconDataArray(const std::vector<dwm1000::BeaconData>& beaconDataArray)
+void CommSendBeaconData(const dwm1000::BeaconData& beaconData)
 {
     assert(xSemaphoreTake(s_rosSemaphore, portMAX_DELAY) == pdTRUE);
 
-    s_pendingBeaconData = beaconDataArray;
+    bool bNewBeacon = true;
+    for (int i = 0; i < s_pendingBeaconData.size(); ++i)
+    {
+        if (s_pendingBeaconData[i].id == beaconData.id)
+        {
+            s_pendingBeaconData[i].dist = beaconData.dist;
+            bNewBeacon = false;
+            break;
+        }
+    }
+
+    if (bNewBeacon)
+    {
+        s_pendingBeaconData.push_back(beaconData);
+    }
 
     xSemaphoreGive(s_rosSemaphore);
 }
