@@ -10,44 +10,258 @@
 #define HIDWORD(dw, hw)     LOWORD(dw) | (hw << 16)
 #define LODWORD(dw, lw)     (HIWORD(dw) << 16) | lw
 
-uint64 get_tx_timestamp_u64(void)
-{
-    __int64 v4; // r4
-    int i; // r0
-    uint32 v7[6]; // [sp+0h] [bp-18h] BYREF
+#define byte_7F3 rx_poll_msg[0]
+#define byte_7F4 rx_poll_msg[1]
+#define byte_7F5 rx_poll_msg[2]
+#define byte_7F6 rx_poll_msg[3]
+#define byte_7F7 rx_poll_msg[4]
+#define byte_7F8 rx_poll_msg[5]
+#define byte_7F9 rx_poll_msg[6]
+#define byte_7FA rx_poll_msg[7]
+#define byte_7FB rx_poll_msg[8]
+#define byte_7FC rx_poll_msg[9]
+#define byte_7FD rx_poll_msg[10]
+#define byte_7FE rx_poll_msg[11]
 
-    v7[0] = 0;
-    v7[1] = 0;
-    v4 = 0LL;
-    dwt_readtxtimestamp(v7);
+#define byte_7FF tx_resp_msg[0]
+#define byte_800 tx_resp_msg[1]
+#define byte_801 tx_resp_msg[2]
+#define byte_802 tx_resp_msg[3]
+#define byte_803 tx_resp_msg[4]
+#define byte_804 tx_resp_msg[5]
+#define byte_805 tx_resp_msg[6]
+#define byte_806 tx_resp_msg[7]
+#define byte_807 tx_resp_msg[8]
+#define byte_808 tx_resp_msg[9]
+#define byte_809 tx_resp_msg[10]
+#define byte_80A tx_resp_msg[11]
+#define byte_80B tx_resp_msg[12]
+#define byte_80C tx_resp_msg[13]
+#define byte_80D tx_resp_msg[14]
 
-    for ( i = 4; i >= 0; --i )
-    {
-        HIDWORD(v4, v4 >> 24);
-        LODWORD(v4, *((uint8*)v7 + i) | ((uint32)v4 << 8));
-    }
+#define byte_80E rx_final_msg[0]
+#define byte_80F rx_final_msg[1]
+#define byte_810 rx_final_msg[2]
+#define byte_811 rx_final_msg[3]
+#define byte_812 rx_final_msg[4]
+#define byte_813 rx_final_msg[5]
+#define byte_814 rx_final_msg[6]
+#define byte_815 rx_final_msg[7]
+#define byte_816 rx_final_msg[8]
+#define byte_817 rx_final_msg[9]
+#define byte_818 rx_final_msg[10]
+#define byte_819 rx_final_msg[11]
+#define byte_81A rx_final_msg[12]
+#define byte_81B rx_final_msg[13]
+#define byte_81C rx_final_msg[14]
+#define byte_81D rx_final_msg[15]
+#define byte_81E rx_final_msg[16]
+#define byte_81F rx_final_msg[17]
+#define byte_820 rx_final_msg[18]
+#define byte_821 rx_final_msg[19]
+#define byte_822 rx_final_msg[20]
+#define byte_823 rx_final_msg[21]
+#define byte_824 rx_final_msg[22]
+#define byte_825 rx_final_msg[23]
 
-    return v4;
-}
+#define byte_826 distance_msg[0]
+#define byte_827 distance_msg[1]
+#define byte_828 distance_msg[2]
+#define byte_829 distance_msg[3]
+#define byte_82A distance_msg[4]
+#define byte_82B distance_msg[5]
+#define byte_82C distance_msg[6]
+#define byte_82D distance_msg[7]
+#define byte_82E distance_msg[8]
+#define byte_82F distance_msg[9]
+#define byte_830 distance_msg[10]
+#define byte_831 distance_msg[11]
+#define byte_832 distance_msg[12]
+#define byte_833 distance_msg[13]
+#define byte_834 distance_msg[14]
+
+#define byte_835 tx_poll_msg[0]
+#define byte_836 tx_poll_msg[1]
+#define byte_837 tx_poll_msg[2]
+#define byte_838 tx_poll_msg[3]
+#define byte_839 tx_poll_msg[4]
+#define byte_83A tx_poll_msg[5]
+#define byte_83B tx_poll_msg[6]
+#define byte_83C tx_poll_msg[7]
+#define byte_83D tx_poll_msg[8]
+#define byte_83E tx_poll_msg[9]
+#define byte_83F tx_poll_msg[10]
+#define byte_840 tx_poll_msg[11]
+
+#define byte_841 rx_resp_msg[0]
+#define byte_842 rx_resp_msg[1]
+#define byte_843 rx_resp_msg[2]
+#define byte_844 rx_resp_msg[3]
+#define byte_845 rx_resp_msg[4]
+#define byte_846 rx_resp_msg[5]
+#define byte_847 rx_resp_msg[6]
+#define byte_848 rx_resp_msg[7]
+#define byte_849 rx_resp_msg[8]
+#define byte_84A rx_resp_msg[9]
+#define byte_84B rx_resp_msg[10]
+#define byte_84C rx_resp_msg[11]
+#define byte_84D rx_resp_msg[12]
+#define byte_84E rx_resp_msg[13]
+#define byte_84F rx_resp_msg[14]
+
+#define byte_850 tx_final_msg[0]
+#define byte_851 tx_final_msg[1]
+#define byte_852 tx_final_msg[2]
+#define byte_853 tx_final_msg[3]
+#define byte_854 tx_final_msg[4]
+#define byte_855 tx_final_msg[5]
+#define byte_856 tx_final_msg[6]
+#define byte_857 tx_final_msg[7]
+#define byte_858 tx_final_msg[8]
+#define byte_859 tx_final_msg[9]
+#define byte_85A tx_final_msg[10]
+#define byte_85B tx_final_msg[11]
+#define byte_85C tx_final_msg[12]
+#define byte_85D tx_final_msg[13]
+#define byte_85E tx_final_msg[14]
+#define byte_85F tx_final_msg[15]
+#define byte_860 tx_final_msg[16]
+#define byte_861 tx_final_msg[17]
+#define byte_862 tx_final_msg[18]
+#define byte_863 tx_final_msg[19]
+#define byte_864 tx_final_msg[20]
+#define byte_865 tx_final_msg[21]
+#define byte_866 tx_final_msg[22]
+#define byte_867 tx_final_msg[23]
+
+#define byte_868 angle_msg[0]
+#define byte_869 angle_msg[1]
+#define byte_86A angle_msg[2]
+#define byte_86B angle_msg[3]
+#define byte_86C angle_msg[4]
+#define byte_86D angle_msg[5]
+#define byte_86E angle_msg[6]
+#define byte_86F angle_msg[7]
+#define byte_870 angle_msg[8]
+#define byte_871 angle_msg[9]
+#define byte_872 angle_msg[10]
+#define byte_873 angle_msg[11]
+#define byte_874 angle_msg[12]
+#define byte_875 angle_msg[13]
+#define byte_876 angle_msg[14]
+#define byte_877 angle_msg[15]
+#define byte_878 angle_msg[16]
+#define byte_879 angle_msg[17]
+#define byte_87A angle_msg[18]
+#define byte_87B angle_msg[19]
+#define byte_87C angle_msg[20]
+#define byte_87D angle_msg[21]
+#define byte_87E angle_msg[22]
+#define byte_87F angle_msg[23]
+#define byte_880 angle_msg[24]
+#define byte_881 angle_msg[25]
+#define byte_882 angle_msg[26]
+#define byte_883 angle_msg[27]
+#define byte_884 angle_msg[28]
+#define byte_885 angle_msg[29]
+#define byte_886 angle_msg[30]
+
+#define byte_887 Semaphore_Release[0]
+#define byte_888 Semaphore_Release[1]
+#define byte_889 Semaphore_Release[2]
+#define byte_88A Semaphore_Release[3]
+#define byte_88B Semaphore_Release[4]
+#define byte_88C Semaphore_Release[5]
+#define byte_88D Semaphore_Release[6]
+#define byte_88E Semaphore_Release[7]
+#define byte_88F Semaphore_Release[8]
+#define byte_890 Semaphore_Release[9]
+#define byte_891 Semaphore_Release[10]
+#define byte_892 Semaphore_Release[11]
+#define byte_893 Semaphore_Release[12]
+
+#define byte_894 Tag_Statistics[0]
+#define byte_895 Tag_Statistics[1]
+#define byte_896 Tag_Statistics[2]
+#define byte_897 Tag_Statistics[3]
+#define byte_898 Tag_Statistics[4]
+#define byte_899 Tag_Statistics[5]
+#define byte_89A Tag_Statistics[6]
+#define byte_89B Tag_Statistics[7]
+#define byte_89C Tag_Statistics[8]
+#define byte_89D Tag_Statistics[9]
+#define byte_89E Tag_Statistics[10]
+#define byte_89F Tag_Statistics[11]
+#define byte_8A0 Tag_Statistics[12]
+
+#define byte_8A1 Master_Release_Semaphore[0]
+#define byte_8A2 Master_Release_Semaphore[1]
+#define byte_8A3 Master_Release_Semaphore[2]
+#define byte_8A4 Master_Release_Semaphore[3]
+#define byte_8A5 Master_Release_Semaphore[4]
+#define byte_8A6 Master_Release_Semaphore[5]
+#define byte_8A7 Master_Release_Semaphore[6]
+#define byte_8A8 Master_Release_Semaphore[7]
+#define byte_8A9 Master_Release_Semaphore[8]
+#define byte_8AA Master_Release_Semaphore[9]
+#define byte_8AB Master_Release_Semaphore[10]
+#define byte_8AC Master_Release_Semaphore[11]
+#define byte_8AD Master_Release_Semaphore[12]
+
+#define byte_8AE Tag_Statistics_response[0]
+#define byte_8AF Tag_Statistics_response[1]
+#define byte_8B0 Tag_Statistics_response[2]
+#define byte_8B1 Tag_Statistics_response[3]
+#define byte_8B2 Tag_Statistics_response[4]
+#define byte_8B3 Tag_Statistics_response[5]
+#define byte_8B4 Tag_Statistics_response[6]
+#define byte_8B5 Tag_Statistics_response[7]
+#define byte_8B6 Tag_Statistics_response[8]
+#define byte_8B7 Tag_Statistics_response[9]
+#define byte_8B8 Tag_Statistics_response[10]
+#define byte_8B9 Tag_Statistics_response[11]
+#define byte_8BA Tag_Statistics_response[12]
+
+#define byte_8BB Master_Release_Semaphore_comfirm[0]
+#define byte_8BC Master_Release_Semaphore_comfirm[1]
+#define byte_8BD Master_Release_Semaphore_comfirm[2]
+#define byte_8BE Master_Release_Semaphore_comfirm[3]
+#define byte_8BF Master_Release_Semaphore_comfirm[4]
+#define byte_8C0 Master_Release_Semaphore_comfirm[5]
+#define byte_8C1 Master_Release_Semaphore_comfirm[6]
+#define byte_8C2 Master_Release_Semaphore_comfirm[7]
+#define byte_8C3 Master_Release_Semaphore_comfirm[8]
+#define byte_8C4 Master_Release_Semaphore_comfirm[9]
+#define byte_8C5 Master_Release_Semaphore_comfirm[10]
+#define byte_8C6 Master_Release_Semaphore_comfirm[11]
+#define byte_8C7 Master_Release_Semaphore_comfirm[12]
 
 uint64 get_rx_timestamp_u64(void)
 {
-    __int64 v4; // r4
-    int i; // r0
-    uint32 v7[6]; // [sp+0h] [bp-18h] BYREF
-
-    v7[0] = 0;
-    v7[1] = 0;
-    v4 = 0LL;
-    dwt_readrxtimestamp(v7);
-
-    for ( i = 4; i >= 0; --i )
+    uint8 ts_tab[5];
+    uint64 ts = 0;
+    int i;
+    dwt_readrxtimestamp(ts_tab);
+    for (i = 4; i >= 0; --i)
     {
-        HIDWORD(v4, v4 >> 24);
-        LODWORD(v4, *((uint8*)v7 + i) | ((uint32)v4 << 8));
+        ts <<= 8;
+        ts |= ts_tab[i];
     }
+    return ts;
+}
 
-    return v4;
+uint64 get_tx_timestamp_u64(void)
+{
+    uint8 ts_tab[5];
+    uint64 ts = 0;
+    int i;
+    dwt_readtxtimestamp(ts_tab);
+    for (i = 4; i >= 0; --i)
+    {
+        ts <<= 8;
+        ts |= ts_tab[i];
+    }
+    return ts;
 }
 
 static void final_msg_get_ts(const uint8* ts_field, uint32* ts)
@@ -93,18 +307,17 @@ void TAG_MEASURE(void)
 
         if ( v1 == 1 )
         {
-            v3 = 1073809408;
-            GPIO_ResetBits(1073809408, 2);
-            v4 = GPIO_ResetBits(1073809408, 4);
-            Tag_Measure_Dis(v4);
+            GPIO_ResetBits(GPIOA, GPIO_Pin_1);
+            GPIO_ResetBits(GPIOA, GPIO_Pin_2);
+            Tag_Measure_Dis();
             v1 = 0;
             if ( TAG_ID != MASTER_TAG )
             {
-                byte_856 = frame_seq_nb;
-                byte_857 = TAG_ID;
-                dwt_writetxdata(13, &Semaphore_Release, 0);
-                dwt_writetxfctrl(13, 0);
-                v5 = dwt_starttx(0);
+                tx_final_msg[6] = frame_seq_nb;
+                tx_final_msg[7] = TAG_ID;
+                dwt_writetxdata(sizeof(Semaphore_Release), &Semaphore_Release, 0);
+                dwt_writetxfctrl(sizeof(Semaphore_Release), 0);
+                v5 = dwt_starttx(DWT_START_TX_IMMEDIATE);
                 tick = portGetTickCnt(v5);
                 while ( 1 )
                 {
@@ -117,7 +330,7 @@ LABEL_7:
 LABEL_61:
                         NVIC_SystemReset();
                 }
-                GPIO_SetBits(v3, 4);
+                GPIO_SetBits(GPIOA, GPIO_Pin_2);
             }
         }
         if ( TAG_ID == MASTER_TAG )
@@ -127,11 +340,11 @@ LABEL_61:
                 for ( i = (uint8)SLAVE_TAG_START_INDEX; !i; i = 1 )
                 {
                     v3 = 0;
-                    byte_863 = 0;
-                    byte_864 = 0;
+                    tx_final_msg[19] = 0;
+                    tx_final_msg[20] = 0;
                     dwt_writetxdata(13, &Tag_Statistics, 0);
                     dwt_writetxfctrl(13, 0);
-                    v8 = dwt_starttx(2);
+                    v8 = dwt_starttx(DWT_RESPONSE_EXPECTED);
                     tick = portGetTickCnt(v8);
                     while ( 1 )
                     {
@@ -159,7 +372,7 @@ LABEL_61:
                             if ( !memcmp(&rx_buffer, &Tag_Statistics_response, 0xAu) )
                             {
                                 Semaphore[v13] = 1;
-                                GPIO_SetBits(1073809408, 4);
+                                GPIO_SetBits(GPIOA, GPIO_Pin_2);
                             }
                         }
                     }
@@ -183,17 +396,17 @@ LABEL_61:
                     {
                         dwt_setrxaftertxdelay(150);
                         dwt_setrxtimeout(2700);
-                        byte_870 = 0;
-                        byte_871 = 0;
+                        angle_msg[8] = 0;
+                        angle_msg[9] = 0;
                         dwt_writetxdata(13, &Master_Release_Semaphore, 0);
                         dwt_writetxfctrl(13, 0);
                         dwt_starttx(2);
                         do
-                        status_reg = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
+                            status_reg = dwt_read32bitoffsetreg(SYS_STATUS_ID, 0);
                         while ( (status_reg & 0x2427D000) == 0 );
                         if ( (status_reg & 0x4000) != 0 )
                         {
-                            GPIO_SetBits(1073809408, 2);
+                            GPIO_SetBits(GPIOA, GPIO_Pin_1);
                             dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
                             v15 = dwt_read32bitoffsetreg(RX_FINFO_ID, 0) & 0x7F;
                             if ( v15 <= 0x18 )
@@ -203,7 +416,7 @@ LABEL_61:
                             if ( !byte_795 )
                             {
                                 byte_795 = 0;
-                                GPIO_SetBits(1073809408, 8);
+                                GPIO_SetBits(GPIOA, GPIO_Pin_3);
                                 v14 = memcmp(&rx_buffer, &Master_Release_Semaphore_comfirm, 0xAu);
                                 if ( !v14 )
                                 {
@@ -287,7 +500,7 @@ LABEL_42:
                         dwt_writetxdata(13, &Tag_Statistics_response, 0);
                         dwt_writetxfctrl(13, 0);
                         dwt_starttx(0);
-                        GPIO_SetBits(1073809408, 4);
+                        GPIO_SetBits(GPIOA, GPIO_Pin_2);
                     }
                     if ( !memcmp(&rx_buffer, &Master_Release_Semaphore, 0xAu) )
                     {
@@ -298,7 +511,7 @@ LABEL_42:
                         while ( (dwt_read32bitoffsetreg(SYS_STATUS_ID, 0) & 0x80) == 0 )
                         ;
                         v1 = 1;
-                        GPIO_SetBits(1073809408, 2);
+                        GPIO_SetBits(GPIOA, GPIO_Pin_1);
                     }
                 }
             }
@@ -351,9 +564,9 @@ LABEL_4:
             dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 606572544);
             continue;
         }
-            dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
-            v1 = (char)dwt_read32bitoffsetreg(RX_FINFO_ID, 0);
-            dwt_readrxdata(&rx_buffer, v1, 0);
+        dwt_write32bitoffsetreg(SYS_STATUS_ID, 0, 16512);
+        v1 = (char)dwt_read32bitoffsetreg(RX_FINFO_ID, 0);
+        dwt_readrxdata(&rx_buffer, v1, 0);
         if ( (uint8)byte_794 % 0x2Du != ANCHOR_IND )
             continue;
         v23 = (uint8)byte_794 % 0x2Du;
@@ -365,8 +578,8 @@ LABEL_4:
             *(uint64 *)&poll_rx_ts = get_rx_timestamp_u64();
             dwt_setrxaftertxdelay(500);
             dwt_setrxtimeout(3300);
-            byte_801 = frame_seq_nb;
-            byte_802 = v2;
+            tx_resp_msg[2] = frame_seq_nb;
+            tx_resp_msg[3] = v2;
             dwt_writetxdata(15, &tx_resp_msg, 0);
             dwt_writetxfctrl(15, 0);
             dwt_starttx(2);
@@ -391,37 +604,21 @@ LABEL_4:
                     final_msg_get_ts(&byte_79C, &v21);
                     final_msg_get_ts(&unk_7A0, &v22);
                     final_msg_get_ts(&unk_7A4, &v17);
-                    v4 = (double)(int32)(v22 - v21);
-                    v15 = HIDWORD(v4);
-                    v16 = LODWORD(v4);
-                    v5 = (double)(int32)(final_rx_ts - resp_tx_ts);
-                    v13 = HIDWORD(v5);
-                    v14 = LODWORD(v5);
-                    v6 = (double)(int32)(v17 - v22);
-                    v11 = HIDWORD(v6);
-                    v12 = LODWORD(v6);
-                    v7 = (double)(int32)(resp_tx_ts - poll_rx_ts);
-                    v18 = HIDWORD(v7);
-                    v10 = LODWORD(v7);
-                    v8 = COERCE_DOUBLE(__PAIR64__(v15, v16))
-                        + COERCE_DOUBLE(__PAIR64__(v13, v14))
-                        + COERCE_DOUBLE(__PAIR64__(v11, v12))
-                        + v7;
-                    v19 = HIDWORD(v8);
-                    v20 = LODWORD(v8);
-                    tof = (double)(__int64)((COERCE_DOUBLE(__PAIR64__(v15, v16)) * COERCE_DOUBLE(__PAIR64__(v13, v14))
-                                            - COERCE_DOUBLE(__PAIR64__(v11, v12)) * COERCE_DOUBLE(__PAIR64__(v18, v10)))
-                                            / v8)
-                        * 1.56500401e-11;
-                    distance = tof * 299702547.0;
-                    *(float *)&v8 = tof * 299702547.0;
-                    distance = distance - dwt_getrangebias((uint8)config, LODWORD(v8), (uint8)byte_7E9);
+                    v4 = (double)(v22 - v21);
+                    v5 = (double)(final_rx_ts - resp_tx_ts);
+                    v6 = (double)(v17 - v22);
+                    v7 = (double)(resp_tx_ts - poll_rx_ts);
+                    v8 = v4 + v5 + v6 + v7;
+                    tof = ((v4 * v5 - v6 * v7) / v8) * DWT_TIME_UNITS;
+                    distance = tof * SPEED_OF_LIGHT;
+                    *(float *)&v8 = tof * SPEED_OF_LIGHT;
+                    distance = distance - dwt_getrangebias((uint8)config, LODWORD(v8), (uint8)config.prf);
                     v9 = (int)(distance * 100.0);
-                    byte_830 = v9 / 100;
-                    byte_831 = v9 % 100;
-                    byte_832 = v23;
-                    byte_828 = frame_seq_nb;
-                    byte_829 = v2;
+                    distance_msg[2] = frame_seq_nb;
+                    distance_msg[3] = v2;
+                    distance_msg[10] = v9 / 100;
+                    distance_msg[11] = v9 % 100;
+                    distance_msg[12] = v23;
                     dwt_writetxdata(15, &distance_msg, 0);
                     dwt_writetxfctrl(15, 0);
                     dwt_starttx(0);
@@ -437,7 +634,7 @@ LABEL_4:
             }
             else
             {
-                putc((uint8)byte_79C, (FILE *)&_stdout);
+                putc((uint8)byte_79C, stdout);
             }
         }
     }
