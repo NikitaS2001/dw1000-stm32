@@ -49,14 +49,17 @@
 #include "stm32f10x_wwdg.h"
 #include "misc.h" /* High level functions for NVIC and SysTick (add-on to CMSIS functions) */
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Uncomment the line below to expanse the "assert_param" macro in the 
-   Standard Peripheral Library drivers code */
-/* #define USE_FULL_ASSERT    1 */
+#ifndef USE_FULL_ASSERT
+#define USE_FULL_ASSERT 0
+#endif /* USE_FULL_ASSERT */
 
-/* Exported macro ------------------------------------------------------------*/
-#ifdef  USE_FULL_ASSERT
+#ifndef USE_ASSERT
+#define USE_ASSERT 0
+#endif /* USE_ASSERT */
+
+void assert_failed(uint8_t* info, uint8_t* file, uint32_t line);
+
+#if USE_FULL_ASSERT
 
 /**
   * @brief  The assert_param macro is used for function's parameters check.
@@ -65,12 +68,16 @@
   *         that failed. If expr is true, it returns no value.
   * @retval None
   */
-  #define assert_param(expr) ((expr) ? (void)0 : assert_failed((uint8_t *)__FILE__, __LINE__))
-/* Exported functions ------------------------------------------------------- */
-  void assert_failed(uint8_t* file, uint32_t line);
+  #define assert_param(expr) ((expr) ? (void)0 : assert_failed((uint8_t *)#expr, (uint8_t *)__FILE__, __LINE__))
 #else
   #define assert_param(expr) ((void)0)
 #endif /* USE_FULL_ASSERT */
+
+#if USE_ASSERT
+  #define strong_assert(expr) ((expr) ? (void)0 : assert_failed((uint8_t *)#expr, (uint8_t *)__FILE__, __LINE__))
+#else
+  #define strong_assert(expr) ((void)0)
+#endif /* USE_ASSERT */
 
 #endif /* __STM32F10x_CONF_H */
 

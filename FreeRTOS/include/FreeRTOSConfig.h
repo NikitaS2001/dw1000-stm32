@@ -27,6 +27,8 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
+#include "stm_lib/stm32f10x_conf.h"
+
 #define xPortSysTickHandler SysTick_Handler
 #define xPortPendSVHandler PendSV_Handler
 #define vPortSVCHandler SVC_Handler
@@ -42,6 +44,8 @@
  *
  * See http://www.freertos.org/a00110.html
  *----------------------------------------------------------*/
+
+#define configASSERT(x)             strong_assert(x)
 
 #define configUSE_PREEMPTION		1
 #define configUSE_IDLE_HOOK			0

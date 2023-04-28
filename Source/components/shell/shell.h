@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stm3210e_eval.h>
+#include <stdio.h>
 
 #define SHELL_LOG(f, ...) ShellPrintf(f, ##__VA_ARGS__);
 

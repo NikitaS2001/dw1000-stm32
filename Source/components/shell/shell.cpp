@@ -4,7 +4,6 @@
 #include "memory/flash.h"
 
 #include <FreeRTOS.h>
-#include <assert.h>
 #include <semphr.h>
 
 #include <string>
@@ -69,11 +68,6 @@ int __io_putchar(int ch)
 int fputc(int ch, FILE *f)
 #endif /* __GNUC__ */
 {
-    if (!g_bShellInitialized)
-    {
-        return ch;
-    }
-
     USART_ClearFlag(SHELL_IFACE, USART_FLAG_TC);
     /* Write a character to shell */
     USART_SendData(SHELL_IFACE, (uint8_t) ch);
@@ -279,7 +273,7 @@ void ShellInit()
     {
         g_bShellInitialized = true;
         s_shellSemaphore = xSemaphoreCreateMutex();
-        assert(s_shellSemaphore != NULL);
+        configASSERT(s_shellSemaphore != NULL);
 
         printf(SHELL_PROMPT);
     }
@@ -298,10 +292,9 @@ int ShellPrintf(const char* format, ...)
         return 0;
     }
 
-    // FIXME: args are not printed properly (format is the first arg)
     va_list args;
     va_start(args, format);
-    int len = printf(format, args);
+    int len = vprintf(format, args);
     va_end(args);
 
     xSemaphoreGive(s_shellSemaphore);

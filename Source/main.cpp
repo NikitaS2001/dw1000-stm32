@@ -1,210 +1,23 @@
-#include "comm/comm.h"
-
-#include "config/config.h"
 #include "shell/shell.h"
+#include "telem/telem.h"
+#include "uwb/uwb.h"
 
-#include "at24c16/AT24C02.h"
 #include "dwm1000/dwm1000.h"
-#include "memory/flash.h"
 
 #include "deca_lib/deca_device_api.h"
 #include "deca_lib/deca_port.h"
-#include "deca_lib/deca_regs.h"
-
-#include "ros_lib/dwm1000/BeaconDataArray.h"
 
 #include <FreeRTOS.h>
 #include <task.h>
-#include <queue.h>
 
-#include <stm32f10x.h>
-#include <stm32_eval.h>
-
-#include <math.h>
 #include <stdio.h>
-#include <string.h>
 
-#include <vector>
-
-uint8 SWITCH_DIS = 1;
-
-extern uint8_t TAG_ID;
-extern uint8_t MASTER_TAG;
-extern uint8_t SLAVE_TAG_START_INDEX;
-extern uint8_t ANCHOR_IND; 
-extern uint8 Semaphore[MAX_SLAVE_TAG];
-
-void Semaphore_Init(void)
+void MainTask(void* pvParameter)
 {
-    int tag_index = 0 ;
-    for(tag_index = 0; tag_index <MAX_SLAVE_TAG; tag_index++)
-    {
-        Semaphore[tag_index]  = 0;
-    }
-}
+    /* Start with board specific hardware init. */
+    peripherals_init();
 
-extern "C" int Sum_Tag_Semaphore_request(void)
-{
-    int tag_index = 0 ;
-    int sum_request = 0;
-    for(tag_index = SLAVE_TAG_START_INDEX; tag_index <MAX_SLAVE_TAG; tag_index++)
-    {
-        sum_request+=Semaphore[tag_index];
-    }
-    return sum_request;
-}
-
-extern "C" void Tag_Measure_Dis(void)
-{
-    uint8 dest_anthor = 0,frame_len = 0;
-    frame_seq_nb=0;
-
-    for(dest_anthor = 0 ;  dest_anthor<ANCHOR_MAX_NUM; dest_anthor++)
-    {
-        dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
-        dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
-    
-        /* Write frame data to DW1000 and prepare transmission. */
-        tx_poll_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
-        tx_poll_msg[ALL_MSG_TAG_IDX] = TAG_ID;
-        dwt_writetxdata(sizeof(tx_poll_msg), tx_poll_msg, 0);
-        dwt_writetxfctrl(sizeof(tx_poll_msg), 0);
-
-        /* Start transmission, indicating that a response is expected so that reception is enabled automatically after the frame is sent and the delay
-         * set by dwt_setrxaftertxdelay() has elapsed. */
-        dwt_starttx(DWT_START_TX_IMMEDIATE| DWT_RESPONSE_EXPECTED);
-
-        //GPIO_SetBits(GPIOA,GPIO_Pin_2);
-        //TODO
-        dwt_rxenable(0);
-        uint32 tick1=portGetTickCount();
-        /* We assume that the transmission is achieved correctly, poll for reception of a frame or error/timeout. */
-        while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
-        {
-            if((portGetTickCount() - tick1) > 350)
-            {
-                break;
-            }
-
-        };
-
-        GPIO_SetBits(GPIOA, GPIO_Pin_1);
-
-        if (status_reg & SYS_STATUS_RXFCG)
-        {
-            /* Clear good RX frame event and TX frame sent in the DW1000 status register. */
-            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG | SYS_STATUS_TXFRS);
-
-            /* A frame has been received, read it into the local buffer. */
-            frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFLEN_MASK;
-            if (frame_len <= RX_BUF_LEN)
-            {
-                dwt_readrxdata(rx_buffer, frame_len, 0);
-            }
-
-            if(rx_buffer[ALL_MSG_TAG_IDX] != TAG_ID)
-            {
-                continue;
-            }
-
-            rx_buffer[ALL_MSG_TAG_IDX] = 0;
-
-            /* As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
-            rx_buffer[ALL_MSG_SN_IDX] = 0;
-
-            if (memcmp(rx_buffer, rx_resp_msg, ALL_MSG_COMMON_LEN) == 0)
-            {
-                uint32 final_tx_time;
-
-                /* Retrieve poll transmission and response reception timestamp. */
-                poll_tx_ts = get_tx_timestamp_u64();
-                resp_rx_ts = get_rx_timestamp_u64();
-
-                /* Compute final message transmission time. */
-                final_tx_time = (resp_rx_ts + (RESP_RX_TO_FINAL_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
-                dwt_setdelayedtrxtime(final_tx_time);
-
-                /* Final TX timestamp is the transmission time we programmed plus the TX antenna delay. */
-                final_tx_ts = (((uint64)(final_tx_time & 0xFFFFFFFE)) << 8) + TX_ANT_DLY;
-
-                /* Write all timestamps in the final message. See NOTE 10 below. */
-                final_msg_set_ts(&tx_final_msg[FINAL_MSG_POLL_TX_TS_IDX], poll_tx_ts);
-                final_msg_set_ts(&tx_final_msg[FINAL_MSG_RESP_RX_TS_IDX], resp_rx_ts);
-                final_msg_set_ts(&tx_final_msg[FINAL_MSG_FINAL_TX_TS_IDX], final_tx_ts);
-
-                /* Write and send final message. */
-                tx_final_msg[ALL_MSG_SN_IDX] = frame_seq_nb;
-                tx_final_msg[ALL_MSG_TAG_IDX] = TAG_ID;
-                dwt_writetxdata(sizeof(tx_final_msg), tx_final_msg, 0);
-                dwt_writetxfctrl(sizeof(tx_final_msg), 0);
-
-                //TODO maybe need longer time
-                //dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
-                //dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS*2);
-                dwt_starttx(DWT_START_TX_DELAYED | DWT_RESPONSE_EXPECTED );
-
-                while (!((status_reg = dwt_read32bitreg(SYS_STATUS_ID)) & (SYS_STATUS_RXFCG | SYS_STATUS_ALL_RX_ERR)))
-                { 
-                    if((portGetTickCount() - tick1) > 500)
-                    {
-                        break;
-                    }
-                }
-
-                /* Increment frame sequence number after transmission of the poll message (modulo 256). */
-                if (status_reg & SYS_STATUS_RXFCG)
-                {
-                    /* Clear good/fail RX frame event in the DW1000 status register. */
-                    dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_RXFCG | SYS_STATUS_TXFRS);
-                    /* A frame has been received, read it into the local buffer. */
-                    frame_len = dwt_read32bitreg(RX_FINFO_ID) & RX_FINFO_RXFLEN_MASK;
-                    if (frame_len <= RX_BUF_LEN)
-                    {
-                        dwt_readrxdata(rx_buffer, frame_len, 0);
-                    }
-
-                    if(rx_buffer[ALL_MSG_TAG_IDX] != TAG_ID)
-                        continue;
-                    rx_buffer[ALL_MSG_TAG_IDX] = 0;
-
-                    /*As the sequence number field of the frame is not relevant, it is cleared to simplify the validation of the frame. */
-                    rx_buffer[ALL_MSG_SN_IDX] = 0;
-
-                    if (memcmp(rx_buffer, distance_msg, ALL_MSG_COMMON_LEN) == 0)
-                    {
-                        int32 anchorId = rx_buffer[12];
-                        int32 anchorDist = (rx_buffer[10]*1000 + rx_buffer[11]*10);
-                        float distMeters = (float)anchorDist / 1000;
-
-                        dwm1000::BeaconData beaconData;
-                        beaconData.id = anchorId;
-                        beaconData.dist = distMeters;
-
-                        CommSendBeaconData(beaconData);
-                    }
-                }
-                else
-                {
-                    /* Clear RX error events in the DW1000 status register. */
-                    dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_ERR);
-                }
-            }
-        }
-        else
-        {
-            /* Clear RX error events in the DW1000 status register. */
-            dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_ERR);
-        }
-        /* Execute a delay between ranging exchanges. */
-        // vTaskDelay(RNG_DELAY_MS / portTICK_PERIOD_MS);
-        frame_seq_nb++;
-    }
-
-}
-
-void MainTask(void* pvParameters)
-{
-    SHELL_LOG("Initializing DWM1000...\r\n");
+    printf("Initializing DWM1000...\r\n");
 
     /* Reset and initialise DW1000.
      * For initialisation, DW1000 clocks must be temporarily set to crystal speed. After initialisation SPI rate can be increased for optimum
@@ -217,10 +30,10 @@ void MainTask(void* pvParameters)
 
     if (dwt_initialise(DWT_LOADUCODE) == -1)
     {
-        SHELL_LOG("DWM1000 init is failed!\r\n");
+        printf("DWM1000 init is failed!\r\n");
 
         // Blink LED when init is failed
-        while (1)
+        while (true)
         {
             GPIO_SetBits(GPIOC, GPIO_Pin_13);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -240,54 +53,35 @@ void MainTask(void* pvParameters)
     dwt_setrxantennadelay(RX_ANT_DLY);
     dwt_settxantennadelay(TX_ANT_DLY);
 
-    SHELL_LOG("Init pass!\r\n");
+    printf("Init pass!\r\n");
 
-    SRuntimeConfig cfg = ConfigRead();
+    ShellInit();
 
-#ifdef BEACON
+    xTaskCreate(
+        UwbTask,
+        "UwbTask",
+        configMINIMAL_STACK_SIZE * 10,
+        NULL,
+        tskIDLE_PRIORITY + 1,
+        NULL);
 
-    SHELL_LOG("Device type: BEACON (anchor)\r\n");
-    SHELL_LOG("Device id: %d\r\n", cfg.deviceId);
+#ifndef BEACON
 
-    ANCHOR_IND = cfg.deviceId;
-
-    /* Loop forever initiating ranging exchanges. */
-    //KalMan_PramInit();
-    ANTHOR_MEASURE();
-
-#else
-
-    SHELL_LOG("Device type: SENSOR (tag)\r\n");
-    SHELL_LOG("Device id: %d\r\n", cfg.deviceId);
-
-    TAG_ID = cfg.deviceId;
-    MASTER_TAG = TAG_ID;
-
-    /* Set expected response's delay and timeout.
-     * As this example only handles one incoming frame with always the same delay and timeout, those values can be set here once for all. */
-    dwt_setrxaftertxdelay(POLL_TX_TO_RESP_RX_DLY_UUS);
-    dwt_setrxtimeout(RESP_RX_TIMEOUT_UUS);
-    
-    if(TAG_ID == MASTER_TAG)
-    {
-        Semaphore_Init();
-    }
-
-    //Master TAG0
-    TAG_MEASURE();
+    xTaskCreate(
+        TelemTask,
+        "TelemTask",
+        configMINIMAL_STACK_SIZE,
+        NULL,
+        tskIDLE_PRIORITY + 1,
+        NULL);
 
 #endif
 
-    vTaskDelete(NULL);	
+    vTaskDelete( NULL );
 }
 
 int main(void)
 {
-    /* Start with board specific hardware init. */
-    peripherals_init();
-
-    ShellInit();
-
     xTaskCreate(
         MainTask,
         "MainTask",
@@ -296,27 +90,5 @@ int main(void)
         tskIDLE_PRIORITY + 1,
         NULL);
 
-#ifndef BEACON
-
-    xTaskCreate(
-        CommTask,
-        "CommTask",
-        configMINIMAL_STACK_SIZE,
-        NULL,
-        tskIDLE_PRIORITY + 1,
-        NULL);
-
-#endif
-
     vTaskStartScheduler();
-}
-
-static void final_msg_set_ts(uint8* ts_field, uint64 ts)
-{
-    int i;
-    for (i = 0; i < FINAL_MSG_TS_LEN; i++)
-    {
-        ts_field[i] = (uint8) ts;
-        ts >>= 8;
-    }
 }

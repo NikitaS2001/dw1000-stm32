@@ -116,6 +116,18 @@ void DebugMon_Handler(void)
 {
 }
 
+void assert_failed(uint8_t* info, uint8_t* file, uint32_t line)
+{
+	printf("ASSERTION FAILED\r\n");
+	printf("%s\r\n", info);
+	printf("%s (at line %d)\r\n", file, line);
+
+  /* Go to infinite loop when assertion fails */
+  while (1)
+  {
+  }
+}
+
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */

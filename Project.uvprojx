@@ -445,9 +445,9 @@
           <GroupName>components</GroupName>
           <Files>
             <File>
-              <FileName>comm.cpp</FileName>
+              <FileName>telem.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\Source\components\comm\comm.cpp</FilePath>
+              <FilePath>.\Source\components\telem\telem.cpp</FilePath>
             </File>
             <File>
               <FileName>shell.cpp</FileName>
@@ -458,6 +458,11 @@
               <FileName>config.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Source\components\config\config.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>uwb.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Source\components\uwb\uwb.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -470,14 +475,24 @@
               <FilePath>.\Source\device\at24c16\AT24C02.cpp</FilePath>
             </File>
             <File>
-              <FileName>dwm1000.o</FileName>
-              <FileType>3</FileType>
-              <FilePath>.\Source\device\dwm1000\dwm1000.o</FilePath>
-            </File>
-            <File>
               <FileName>flash.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Source\device\memory\flash.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>dwm1000.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\device\dwm1000\dwm1000.c</FilePath>
+            </File>
+            <File>
+              <FileName>dwm_frame.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\device\dwm1000\frame\dwm_frame.c</FilePath>
+            </File>
+            <File>
+              <FileName>dwm_addr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\device\dwm1000\regs\dwm_addr.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1688,9 +1703,9 @@
           <GroupName>components</GroupName>
           <Files>
             <File>
-              <FileName>comm.cpp</FileName>
+              <FileName>telem.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>.\Source\components\comm\comm.cpp</FilePath>
+              <FilePath>.\Source\components\telem\telem.cpp</FilePath>
             </File>
             <File>
               <FileName>shell.cpp</FileName>
@@ -1701,6 +1716,11 @@
               <FileName>config.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Source\components\config\config.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>uwb.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\Source\components\uwb\uwb.cpp</FilePath>
             </File>
           </Files>
         </Group>
@@ -1713,14 +1733,24 @@
               <FilePath>.\Source\device\at24c16\AT24C02.cpp</FilePath>
             </File>
             <File>
-              <FileName>dwm1000.o</FileName>
-              <FileType>3</FileType>
-              <FilePath>.\Source\device\dwm1000\dwm1000.o</FilePath>
-            </File>
-            <File>
               <FileName>flash.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>.\Source\device\memory\flash.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>dwm1000.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\device\dwm1000\dwm1000.c</FilePath>
+            </File>
+            <File>
+              <FileName>dwm_frame.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\device\dwm1000\frame\dwm_frame.c</FilePath>
+            </File>
+            <File>
+              <FileName>dwm_addr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Source\device\dwm1000\regs\dwm_addr.c</FilePath>
             </File>
           </Files>
         </Group>

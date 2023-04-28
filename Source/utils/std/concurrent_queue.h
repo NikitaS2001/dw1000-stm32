@@ -1,7 +1,6 @@
 #pragma once
 
 #include <FreeRTOS.h>
-#include <assert.h>
 #include <semphr.h>
 
 #include <queue>
@@ -17,7 +16,7 @@ public:
     concurrent_queue()
     {
         mutex_ = xSemaphoreCreateMutex();
-        assert(mutex_ != NULL);
+        configASSERT(mutex_ != NULL);
     }
 
     T pop()
