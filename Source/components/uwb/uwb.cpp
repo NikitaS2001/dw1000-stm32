@@ -56,6 +56,32 @@ DECLARE_MSG(MSG_DWT_DIST, SUwbDistMsg,
     double distance;
 );
 
+static uint32_t GetAntennaTxDelay()
+{
+#if DWM_VAR_TRX_DLY
+    SRuntimeConfig cfg = ConfigRead();
+    return cfg.aggAntDelay / 2;
+#else
+    return TX_ANT_DLY;
+#endif // DWM_VAR_TRX_DLY
+}
+
+static uint32_t GetAntennaRxDelay()
+{
+#if DWM_VAR_TRX_DLY
+    SRuntimeConfig cfg = ConfigRead();
+    return cfg.aggAntDelay / 2;
+#else
+    return RX_ANT_DLY;
+#endif // DWM_VAR_TRX_DLY
+}
+
+static void UpdateAntennaDelays()
+{
+    dwt_setrxantennadelay(GetAntennaTxDelay());
+    dwt_settxantennadelay(GetAntennaRxDelay());
+}
+
 static const char* UwbPacketTypeToString(EUwbMsgType type)
 {
     switch (type)
@@ -106,7 +132,7 @@ static SUwbPayload UwbPackPayload()
     return UwbPackPayload(T());
 }
 
-bool UwbRead(SUwbPacket& outPacket, uint32_t rxTimeout = 0)
+static bool UwbRead(SUwbPacket& outPacket, uint32_t rxTimeout = 0)
 {
     SDwmFrame frame;
     if (DwmFrameRead(&frame, rxTimeout) != DWT_SUCCESS)
@@ -122,7 +148,7 @@ bool UwbRead(SUwbPacket& outPacket, uint32_t rxTimeout = 0)
     return true;
 }
 
-bool UwbWrite(const SUwbPacket& packet, uint32_t txDelay = 0)
+static bool UwbWrite(const SUwbPacket& packet, uint32_t txDelay = 0)
 {
     SDwmFrame frame;
     frame.hdr = packet.frameHdr;
@@ -132,7 +158,7 @@ bool UwbWrite(const SUwbPacket& packet, uint32_t txDelay = 0)
     return DwmFrameWrite(&frame, txDelay) == DWT_SUCCESS;
 }
 
-bool UwbReadAfterWrite(const SUwbPacket& packet, SUwbPacket& outPacket, uint32_t txDelay = 0, uint32_t rxDelay = 0, uint32_t rxTimeout = 0)
+static bool UwbReadAfterWrite(const SUwbPacket& packet, SUwbPacket& outPacket, uint32_t txDelay = 0, uint32_t rxDelay = 0, uint32_t rxTimeout = 0)
 {
     SDwmFrame frame;
     frame.hdr = packet.frameHdr;
@@ -155,13 +181,12 @@ bool UwbReadAfterWrite(const SUwbPacket& packet, SUwbPacket& outPacket, uint32_t
 
 static void AnchorLoop()
 {
-    SHELL_LOG("[UWB] Device type: BEACON (anchor)\r\n");
+    SHELL_LOG("[UWB] Device type: ANCHOR\r\n");
 
     while (true)
     {
         /* Set configuration which is not preserved in deep sleep */
-        dwt_setrxantennadelay(RX_ANT_DLY);
-        dwt_settxantennadelay(TX_ANT_DLY);
+        UpdateAntennaDelays();
 
         SUwbPacket pollPacket;
 
@@ -272,7 +297,7 @@ static void PollAnchor(TDeviceAddr addr)
     uint32_t finalTxTime = (respRxTs + (RESP_RX_TO_FINAL_TX_DLY_UUS * UUS_TO_DWT_TIME)) >> 8;
 
     /* Final TX timestamp is the transmission time we programmed plus the TX antenna delay. */
-    uint32_t finalTxTs = (((uint64_t)(finalTxTime & 0xFFFFFFFEUL)) << 8) + TX_ANT_DLY;
+    uint32_t finalTxTs = (((uint64_t)(finalTxTime & 0xFFFFFFFEUL)) << 8) + GetAntennaTxDelay();
 
     SUwbFinalMsg finalMsg;
     finalMsg.pollTxTs = pollTxTs;
@@ -312,13 +337,12 @@ static void PollAnchor(TDeviceAddr addr)
 
 static void TagLoop()
 {
-    SHELL_LOG("[UWB] Device type: SENSOR (tag)\r\n");
+    SHELL_LOG("[UWB] Device type: TAG\r\n");
 
     while (true)
     {
         /* Set configuration which is not preserved in deep sleep */
-        dwt_setrxantennadelay(RX_ANT_DLY);
-        dwt_settxantennadelay(TX_ANT_DLY);
+        UpdateAntennaDelays();
 
         for (int32_t i = 1; i <= 10; ++i)
         {
@@ -334,7 +358,13 @@ void UwbTask(void* pvParameters)
     dwt_setpanid(0);
     WriteDeviceAddress(cfg.deviceId);
 
+    uint32_t txDly = GetAntennaTxDelay();
+    uint32_t rxDly = GetAntennaRxDelay();
+
     SHELL_LOG("[UWB] Device id: %d (0x%04X:0x%04X)\r\n", cfg.deviceId, ReadPanId(), ReadDeviceAddress());
+    SHELL_LOG("[UWB] Antenna TRX delay is '%d'\r\n", txDly + rxDly);
+    SHELL_LOG("\tTX: %d\r\n", txDly);
+    SHELL_LOG("\tRX: %d\r\n", rxDly);
 
     dwt_enableframefilter(DWT_FF_DATA_EN);
 

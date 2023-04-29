@@ -3,6 +3,12 @@
 #include "deca_lib/deca_device_api.h"
 #include <stdint.h>
 
+#ifndef DWM_VAR_TRX_DLY
+#define DWM_VAR_TRX_DLY 0
+#endif
+
+#if (DWM_VAR_TRX_DLY == 0)
+
 /**
  * The sum of the values is the TX to RX antenna delay, experimentally determined by a calibration process. Here we use a hard coded typical value
  * but, in a real application, each device should have its own antenna delay properly calibrated to get the best possible precision when performing
@@ -10,8 +16,10 @@
  * 
  * Default antenna delay values for 64 MHz PRF:
  */
-#define TX_ANT_DLY 16436
-#define RX_ANT_DLY 16436
+#define TX_ANT_DLY 16466
+#define RX_ANT_DLY 16466
+
+#endif // DWM_VAR_TRX_DLY
 
 /**
  * UWB microsecond (uus) to device time unit (dtu, around 15.65 ps) conversion factor.
@@ -110,7 +118,7 @@ static dwt_config_t config =
  */
 static dwt_txconfig_t configTx = {
     0xC2,           //Delay
-    0x0E08281F      //Power
+    0x2545651F      //Power
 };
 
 /*! ------------------------------------------------------------------------------------------------------------------

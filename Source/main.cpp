@@ -49,10 +49,6 @@ void MainTask(void* pvParameter)
     dwt_configure(&config);
     dwt_setleds(1);
 
-    /* Apply default antenna delay value. */
-    dwt_setrxantennadelay(RX_ANT_DLY);
-    dwt_settxantennadelay(TX_ANT_DLY);
-
     printf("Init pass!\r\n");
 
     ShellInit();

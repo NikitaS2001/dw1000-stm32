@@ -12,8 +12,8 @@ typedef struct
 {
     TDeviceAddr deviceId;
 
-    // Anchor refresh time interval
-    int32_t refreshInt;
+    // Aggregate (sum of) transmitter and receiver antenna delays
+    uint32_t aggAntDelay;
 } SRuntimeConfig;
 
 SRuntimeConfig ConfigRead(void);

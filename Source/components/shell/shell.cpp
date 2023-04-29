@@ -83,44 +83,6 @@ int fputc(int ch, FILE *f)
 }
 #endif
 
-void ShellProc_interval(std::vector<std::string> argv)
-{
-    SRuntimeConfig cfg = ConfigRead();
-
-    if (argv.size() > 1)
-    {
-        if (argv[1] == "set")
-        {
-            if (argv.size() > 2)
-            {
-                const int newInt = atoi(argv[2].c_str());
-                if (newInt >= 5 && newInt <= 20)
-                {
-                    cfg.refreshInt = newInt;
-                    ConfigWrite(cfg);
-                    printf("Ranging interval is set to '%d'\r\n", cfg.refreshInt);
-                }
-                else
-                {
-                    printf("Invalid interval '%d', must be in range [5-20]\r\n", newInt);
-                }
-            }
-            else
-            {
-                printf("Interval is not specified!\r\n");
-            }
-        }
-        else
-        {
-            printf("Unknown arg '%s'!\r\n", argv[1].c_str());
-        }
-    }
-    else
-    {
-        printf("Ranging interval: %d\r\n", cfg.refreshInt);
-    }
-}
-
 void ShellProc_device_id(std::vector<std::string> argv)
 {
     SRuntimeConfig cfg = ConfigRead();
@@ -159,6 +121,50 @@ void ShellProc_device_id(std::vector<std::string> argv)
     }
 }
 
+#if DWM_VAR_TRX_DLY
+void ShellProc_ant_dly(std::vector<std::string> argv)
+{
+    SRuntimeConfig cfg = ConfigRead();
+
+    if (argv.size() > 1)
+    {
+        if (argv[1] == "set")
+        {
+            if (argv.size() > 2)
+            {
+                const int newDelay = atoi(argv[2].c_str());
+                if (newDelay >= 0)
+                {
+                    cfg.aggAntDelay = newDelay;
+                    ConfigWrite(cfg);
+                    printf("Antenna delay is set to '%d'\r\n", cfg.aggAntDelay);
+                    printf("\tTX: %d\r\n", cfg.aggAntDelay / 2);
+                    printf("\tRX: %d\r\n", cfg.aggAntDelay / 2);
+                }
+                else
+                {
+                    printf("Invalid delay '%d', must be greater than 0\r\n", newDelay);
+                }
+            }
+            else
+            {
+                printf("Antenna delay is not specified!\r\n");
+            }
+        }
+        else
+        {
+            printf("Unknown arg '%s'!\r\n", argv[1].c_str());
+        }
+    }
+    else
+    {
+        printf("Antenna delay (TRX): %d\r\n", cfg.aggAntDelay);
+        printf("\tTX: %d\r\n", cfg.aggAntDelay / 2);
+        printf("\tRX: %d\r\n", cfg.aggAntDelay / 2);
+    }
+}
+#endif // DWM_VAR_TRX_DLY
+
 void ShellProc_reset(std::vector<std::string> argv)
 {
     printf("HW reset initiated...\r\n");
@@ -168,16 +174,20 @@ void ShellProc_reset(std::vector<std::string> argv)
 void ShellProc_help(std::vector<std::string> argv)
 {
     printf("Application commands:\r\n");
-    printf("\tinterval [set] [val]  - read/write ranging interval [5-20]\r\n");
     printf("\tdevice_id [set] [val] - read/write device unique id number [0-255]\r\n");
+#if DWM_VAR_TRX_DLY
+    printf("\tant_dly [set] [val] - read/write antenna delay value (sum of TX and RX)\r\n");
+#endif // DWM_VAR_TRX_DLY
     printf("\treset                 - system hard reboot\r\n");
     printf("\thelp                  - show list of commands\r\n");
 }
 
 SShellProc shellProcedures[] =
 {
-    DECLARE_SHELL_PROCEDURE(interval),
     DECLARE_SHELL_PROCEDURE(device_id),
+#if DWM_VAR_TRX_DLY
+    DECLARE_SHELL_PROCEDURE(ant_dly),
+#endif // DWM_VAR_TRX_DLY
     DECLARE_SHELL_PROCEDURE(reset),
     DECLARE_SHELL_PROCEDURE(help),
 };
