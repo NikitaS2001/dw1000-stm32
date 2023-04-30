@@ -27,7 +27,6 @@
  * */
 #define UUS_TO_DWT_TIME 65536
 
-
 /**
  * Delay between frames, in UWB microseconds.
  * 
@@ -43,7 +42,7 @@
  * This is the delay from Frame RX timestamp to TX reply timestamp used for calculating/setting the DW1000's delayed TX function. This includes the
  * frame length of approximately 2.66 ms with above configuration.
  */
-#define RESP_RX_TO_FINAL_TX_DLY_UUS 2800*4
+#define RESP_RX_TO_FINAL_TX_DLY_UUS 11200
 
 /**
  * This is the delay from the end of the frame transmission to the enable of the receiver,
@@ -58,7 +57,7 @@
  * is arbitrary but chosen large enough to make sure that there is enough time to receive the complete response frame sent by the responder at the
  * 110k data rate used (around 30 ms).
  */
-#define RESP_RX_TIMEOUT_UUS 27000 // 2700
+#define RESP_RX_TIMEOUT_UUS 27000
 
 /**
  * Receive final frame timeout, in UWB microseconds.
@@ -67,12 +66,12 @@
  * is arbitrary but chosen large enough to make sure that there is enough time to receive the complete final frame sent by the responder at the
  * 110k data rate used (around 35 ms).
  */
-#define FINAL_RX_TIMEOUT_UUS 33000 // 3300
+#define FINAL_RX_TIMEOUT_UUS 33000
 
 /**
  * Receive distance frame timeout, in UWB microseconds.
  */
-#define DIST_RX_TIMEOUT_UUS 33000 // 3300
+#define DIST_RX_TIMEOUT_UUS 33000
 
 /**
  * Preamble timeout, in multiple of PAC size.
@@ -109,12 +108,12 @@ static dwt_config_t config =
 
 /**
  * Low power:  reduce reflections due to large metal structures
- * 0x0E082848, //16M prf power
- * 0x25456585 //64M prf power
+ * 0x0E082848,  //16M prf power
+ * 0x25456585   //64M prf power
  *
  * High power:
- * 0x0E08281F, //16M prf power
- * 0x2545651F //64M prf power
+ * 0x0E08281F,  //16M prf power
+ * 0x2545651F   //64M prf power
  */
 static dwt_txconfig_t configTx = {
     0xC2,           //Delay
